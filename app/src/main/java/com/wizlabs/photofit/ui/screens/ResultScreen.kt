@@ -74,7 +74,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun ResultScreen(onNextPart: (() -> Unit)?, onBack: () -> Unit) {
+fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBack: () -> Unit) {
     val part = Work.part; var out by remember { mutableStateOf(Work.output) }
     val img = Work.rendered
     if (part == null || out == null || img == null) { StubScreen("Nothing here", onBack); return }
@@ -148,6 +148,7 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onBack: () -> Unit) {
                         if (u != null) { Work.savedUri = u; saved = true; haptics.confirm() }
                     } else createDoc.launch(name)
                 }, Modifier.weight(1f))
+                if (onPrint != null) GhostButton("Print sheet", onPrint, Modifier.weight(1f))
                 if (onNextPart != null) GhostButton("Next: ${Work.preset?.parts?.getOrNull(Work.partIndex + 1)?.label ?: ""}", onNextPart, Modifier.weight(1f))
             }
         }

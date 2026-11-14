@@ -19,7 +19,7 @@ class PresetRepo(private val ctx: Context) {
     val builtIn: List<Preset> get() = bundle.presets
 
     fun all(): List<Preset> = mine + builtIn
-    fun find(id: String): Preset? = mine.firstOrNull { it.id == id } ?: builtIn.firstOrNull { it.id == id }
+    fun find(id: String): Preset? = mine.firstOrNull { it.id == id } ?: builtIn.firstOrNull { it.id == id } ?: IdPresets.all.firstOrNull { it.id == id }
 
     fun search(q: String): List<Preset> {
         val t = q.trim().lowercase()

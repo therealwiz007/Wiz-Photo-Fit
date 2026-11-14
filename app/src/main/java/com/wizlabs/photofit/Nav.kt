@@ -11,6 +11,7 @@ sealed interface Screen {
     data class ExamDetail(val presetId: String) : Screen { override val route = "exam:$presetId" }
     data class Editor(val presetId: String, val part: Int) : Screen { override val route = "edit:$presetId:$part" }
     data object Result : Screen { override val route = "result" }
+    data object PrintSheet : Screen { override val route = "print" }
     data object IdList : Screen { override val route = "ids" }
     data object Compress : Screen { override val route = "compress" }
     data object Signature : Screen { override val route = "signature" }

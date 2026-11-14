@@ -91,10 +91,12 @@ private fun App(link: String?) {
                     val next = com.wizlabs.photofit.data.Work.preset?.parts?.getOrNull(com.wizlabs.photofit.data.Work.partIndex + 1)
                     com.wizlabs.photofit.ui.screens.ResultScreen(
                         onNextPart = if (next != null) ({ nav.pop() }) else null,
+                        onPrint = if (com.wizlabs.photofit.data.Work.preset?.group == com.wizlabs.photofit.data.IdPresets.GROUP || com.wizlabs.photofit.data.Work.part?.size?.phys != null) ({ nav.push(Screen.PrintSheet) }) else null,
                         onBack = nav::pop,
                     )
                 }
-                Screen.IdList -> StubScreen("ID / Passport", nav::pop)
+                Screen.IdList -> com.wizlabs.photofit.ui.screens.IdListScreen(nav::push, nav::pop)
+                Screen.PrintSheet -> com.wizlabs.photofit.ui.screens.PrintSheetScreen(nav::pop)
                 Screen.Compress -> com.wizlabs.photofit.ui.screens.CompressScreen(onBack = nav::pop)
                 Screen.Signature -> StubScreen("Signature", nav::pop)
                 Screen.Joiner -> StubScreen("Join photo + signature", nav::pop)
