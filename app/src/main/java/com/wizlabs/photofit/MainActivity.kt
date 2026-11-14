@@ -32,7 +32,6 @@ import com.wizlabs.photofit.ui.motion.WizMotion
 import com.wizlabs.photofit.ui.motion.backPeek
 import com.wizlabs.photofit.ui.screens.AboutScreen
 import com.wizlabs.photofit.ui.screens.HomeScreen
-import com.wizlabs.photofit.ui.screens.StubScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,9 +97,9 @@ private fun App(link: String?) {
                 Screen.IdList -> com.wizlabs.photofit.ui.screens.IdListScreen(nav::push, nav::pop)
                 Screen.PrintSheet -> com.wizlabs.photofit.ui.screens.PrintSheetScreen(nav::pop)
                 Screen.Compress -> com.wizlabs.photofit.ui.screens.CompressScreen(onBack = nav::pop)
-                Screen.Signature -> StubScreen("Signature", nav::pop)
-                Screen.Joiner -> StubScreen("Join photo + signature", nav::pop)
-                Screen.Saved -> StubScreen("Saved", nav::pop)
+                Screen.Signature -> com.wizlabs.photofit.ui.screens.ExamDetailScreen(repo, com.wizlabs.photofit.ui.screens.GenericSignature.id, nav::push, nav::pop)
+                Screen.Joiner -> com.wizlabs.photofit.ui.screens.JoinerScreen(onResult = { nav.push(Screen.Result) }, onBack = nav::pop)
+                Screen.Saved -> com.wizlabs.photofit.ui.screens.SavedScreen(nav::pop)
                 is Screen.Builder -> com.wizlabs.photofit.ui.screens.PresetBuilderScreen(repo, s.editId, s.copyFrom,
                     onSaved = { id -> nav.pop(); if (s.editId == null) nav.push(Screen.ExamDetail(id)) }, onBack = nav::pop)
                 is Screen.Import -> com.wizlabs.photofit.ui.screens.ImportScreen(repo, s.code,

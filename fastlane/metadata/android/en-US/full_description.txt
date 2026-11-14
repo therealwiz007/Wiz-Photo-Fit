@@ -1,0 +1,27 @@
+Make your photo and signature the exact size and KB that your online form asks for. Wiz Photo Fit works fully offline, shows no ads and asks for no permissions.
+
+EXAM & GOVT FORMS
+• 36 ready sizes: SSC, UPSC, RRB, IBPS, SBI, RBI, JEE Main, JEE Advanced, NEET UG, NEET PG, CUET, GATE, CAT, CLAT, NIFT, ICAR, UGC NET, CTET, state PSCs, Police, Agniveer, Navodaya, Sainik School, PAN card and more
+• Photo, signature, thumb impression, handwritten declaration and parent signature, each with its own size
+• Exact KB: the file always lands inside the limit (for example 20–50 KB)
+• Name and date strip on the photo when a form asks for it
+• Signature cleaner: white paper, sharp black or blue ink, even from a phone photo
+• Face is found and centred automatically; change the background to white or light blue
+• Join photo + signature into one image
+
+MAKE YOUR OWN SIZE
+• Enter width and height in px, cm, mm or inch, the DPI, and the min / max KB from your form
+• Copy and edit any built-in size, save it, and share it as a code with friends or a cyber café
+
+ID & PASSPORT
+• India passport, USA, UK, Schengen, Canada, Australia, UAE, China and stamp sizes
+• Print sheet: many copies on 4×6 in or A4 with cut lines, as JPG or true-size PDF
+
+COMPRESS
+• Make up to 100 photos smaller at once: target KB, longest side, JPG / WEBP / PNG
+
+PRIVATE BY DESIGN
+• No ads, no account, no internet permission: your photos never leave your phone
+• Uses Android's own photo picker and camera, so the app needs no storage or camera permission
+
+Sizes change every year: always check your latest official notification. Every size can be edited. Wiz Photo Fit is an independent tool and is not affiliated with any government body or exam authority.
