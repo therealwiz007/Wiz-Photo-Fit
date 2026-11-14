@@ -1,0 +1,13 @@
+<!-- Photo Fit mark (original): yellow corner brackets snapping around a head-and-shoulders photo, with a small size bar. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#FFC400"
+        android:pathData="M30,30 h14 v5 h-9 v9 h-5z M78,30 h-14 v5 h9 v9 h5z M30,78 h14 v-5 h-9 v-9 h-5z M78,78 h-14 v-5 h9 v-9 h5z" />
+    <path android:fillColor="#FFC400"
+        android:pathData="M54,40 a8,8 0 1 0 0.01,0z M40,70 a14,12 0 0 1 28,0z" />
+    <path android:fillColor="#FFC400"
+        android:pathData="M40,84 h28 v3 h-28z" />
+</vector>
