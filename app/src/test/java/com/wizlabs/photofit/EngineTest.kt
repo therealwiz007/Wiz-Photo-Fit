@@ -137,3 +137,18 @@ class CropMathTest {
         assertEquals(0f, r.left, 0.5f); assertEquals(0f, r.top, 0.5f)
     }
 }
+
+class ShareCodeTest {
+    private fun bundle() = PresetJson.parseBundle(listOf("src/main/assets/presets.json", "app/src/main/assets/presets.json").map(::File).first { it.exists() }.readText())
+    @Test fun roundTrip() {
+        for (p in bundle().presets) {
+            val back = com.wizlabs.photofit.data.ShareCode.decode("hello " + com.wizlabs.photofit.data.ShareCode.encode(p) + " bye", "u-x")
+            assertEquals(p.id, p.parts.map { it.size.targetPx() }, back.parts.map { it.size.targetPx() })
+            assertEquals(p.parts.map { it.kbMin to it.kbMax }, back.parts.map { it.kbMin to it.kbMax })
+        }
+    }
+    @Test fun rejectsGarbage() {
+        for (bad in listOf("", "hello", "WPF1.!!!!", "WPF2.abc", "WPF1." + "A".repeat(5000)))
+            assertTrue(runCatching { com.wizlabs.photofit.data.ShareCode.decode(bad, "u") }.isFailure)
+    }
+}

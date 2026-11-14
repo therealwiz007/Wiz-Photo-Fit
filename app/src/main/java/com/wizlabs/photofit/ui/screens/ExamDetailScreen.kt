@@ -115,7 +115,10 @@ fun ExamDetailScreen(repo: PresetRepo, presetId: String, open: (Screen) -> Unit,
                 GhostButton(if (p.mine) "Edit size" else "Copy and edit", {
                     open(if (p.mine) Screen.Builder(editId = p.id) else Screen.Builder(copyFrom = p.id))
                 }, Modifier.weight(1f), icon = Icons.Default.Edit)
-                GhostButton("Share size", { open(Screen.Import(code = "share:" + p.id)) }, Modifier.weight(1f), icon = Icons.Default.Share)
+                GhostButton("Share size", {
+                    val send = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, com.wizlabs.photofit.data.ShareCode.shareText(p)) }
+                    ctx.startActivity(Intent.createChooser(send, "Share size"))
+                }, Modifier.weight(1f), icon = Icons.Default.Share)
             }
             if (p.sources.isNotEmpty()) {
                 Spacer(Modifier.height(16.dp))

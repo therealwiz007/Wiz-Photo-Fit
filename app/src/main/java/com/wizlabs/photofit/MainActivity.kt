@@ -42,7 +42,14 @@ class MainActivity : ComponentActivity() {
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
         )
-        setContent { WizTheme { ProvideWizMotion { App() } } }
+        val link = intent?.data?.toString()
+        setContent { WizTheme { ProvideWizMotion { App(link) } } }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        // singleTask: a share link tapped while the app is open restarts the UI at the Import screen
+        if (intent.data != null) { setIntent(intent); recreate() }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
@@ -52,8 +59,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun App() {
+private fun App(link: String?) {
     val nav = remember { Nav() }
+    LaunchedEffect(link) { if (link != null && link.startsWith(com.wizlabs.photofit.data.ShareCode.LINK)) nav.push(Screen.Import(link)) }
     val ctx = androidx.compose.ui.platform.LocalContext.current
     val repo = remember { com.wizlabs.photofit.data.PresetRepo(ctx.applicationContext) }
     val peek = LocalBackPeek.current
@@ -93,7 +101,8 @@ private fun App() {
                 Screen.Saved -> StubScreen("Saved", nav::pop)
                 is Screen.Builder -> com.wizlabs.photofit.ui.screens.PresetBuilderScreen(repo, s.editId, s.copyFrom,
                     onSaved = { id -> nav.pop(); if (s.editId == null) nav.push(Screen.ExamDetail(id)) }, onBack = nav::pop)
-                is Screen.Import -> StubScreen("Import preset", nav::pop)
+                is Screen.Import -> com.wizlabs.photofit.ui.screens.ImportScreen(repo, s.code,
+                    onAdded = { id -> nav.pop(); nav.push(Screen.ExamDetail(id)) }, onBack = nav::pop)
             }
         }
     }
