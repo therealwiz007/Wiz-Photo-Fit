@@ -197,7 +197,7 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     for ((v, l) in listOf(com.wizlabs.photofit.data.Bg.KEEP to "Keep", com.wizlabs.photofit.data.Bg.WHITE to "White", com.wizlabs.photofit.data.Bg.LIGHT to "Light blue")) Chip(l, bg == v) { bg = v }
                 }
-                if (model !is com.wizlabs.photofit.engine.ModelStatus.State.Ready || note != null) {
+                if ((bg != com.wizlabs.photofit.data.Bg.KEEP && model !is com.wizlabs.photofit.engine.ModelStatus.State.Ready) || note != null) {
                     Spacer(Modifier.height(10.dp))
                     com.wizlabs.photofit.ui.components.ModelReadyCard(model, onRetry = { com.wizlabs.photofit.engine.ModelStatus.retry(ctx.applicationContext) })
                 }
