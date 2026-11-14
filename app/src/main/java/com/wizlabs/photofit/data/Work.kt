@@ -14,6 +14,8 @@ object Work {
     var rendered: Bitmap? = null
     var output: Render.Output? = null
     var savedUri: Uri? = null
+    /** Something the Result screen should tell the user (e.g. background not changed). */
+    var notice: String? = null
 
     val part: Part? get() = preset?.parts?.getOrNull(partIndex)
 

@@ -94,11 +94,16 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
     val photoAspect = if (nameDate && part.kind == PartKind.PHOTO) target.w / (target.h * (1 - NameDateStrip.BAND)) else target.w.toFloat() / target.h
     var crop by remember { mutableStateOf<CropState?>(null) }
     val inkPart = part.kind == PartKind.SIGNATURE || part.kind == PartKind.PARENT_SIGNATURE || part.kind == PartKind.DECLARATION || part.kind == PartKind.THUMB
+    val photoPart = part.kind == PartKind.PHOTO || part.kind == PartKind.POSTCARD
+    var bg by rememberSaveable { mutableStateOf(part.background) }
+    var faceLocked by remember { mutableStateOf(false) }
+    var note by remember { mutableStateOf<String?>(null) }
     var clean by rememberSaveable { mutableStateOf(inkPart) }
     var strength by rememberSaveable { mutableStateOf(0.5f) }
     var ink by rememberSaveable { mutableStateOf(if (part.kind == PartKind.THUMB) SignatureCleaner.Ink.KEEP else SignatureCleaner.Ink.BLACK) }
 
     LaunchedEffect(Unit) {
+        if (photoPart && part.background != com.wizlabs.photofit.data.Bg.KEEP) com.wizlabs.photofit.engine.BackgroundSwap.prepare(ctx.applicationContext)
         if (bmp == null) {
             val b = withContext(Dispatchers.IO) {
                 val u = Work.sourceUri
@@ -110,7 +115,18 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
         }
     }
     val b = bmp
-    LaunchedEffect(b, photoAspect) { if (b != null) crop = CropMath.clamp(crop ?: CropState.centered(b.width, b.height), b.width, b.height, photoAspect) }
+    LaunchedEffect(b, photoAspect) {
+        if (b == null) return@LaunchedEffect
+        crop = CropMath.clamp(crop ?: CropState.centered(b.width, b.height), b.width, b.height, photoAspect)
+        if (photoPart && !faceLocked) {
+            val face = com.wizlabs.photofit.engine.FaceFinder.biggest(b)
+            if (face != null) {
+                val ratio = com.wizlabs.photofit.data.IdPresets.headRatio[Work.preset?.id] ?: 0.6f
+                crop = CropMath.fitFace(face, b.width, b.height, photoAspect, headRatio = ratio)
+                faceLocked = true; haptics.tick()
+            }
+        }
+    }
 
     Column(Modifier.fillMaxSize().background(Wiz.Bg).navigationBarsPadding().imePadding()) {
         TopBar(part.label, SpecText.line(part), onBack = onBack)
@@ -162,6 +178,17 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                 }, icon = Icons.Default.Refresh)
                 GhostButton("Reset", { b?.let { crop = CropMath.clamp(CropState.centered(it.width, it.height), it.width, it.height, photoAspect) } })
             }
+            if (photoPart) {
+                Spacer(Modifier.height(14.dp))
+                Text(if (faceLocked) "Face found and centred" else "Move the face into the oval", color = if (faceLocked) Wiz.Good else Wiz.Muted, style = MaterialTheme.typography.bodySmall)
+                Spacer(Modifier.height(10.dp))
+                Text("Background", color = Wiz.Muted, style = MaterialTheme.typography.labelMedium)
+                Spacer(Modifier.height(4.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    for ((v, l) in listOf(com.wizlabs.photofit.data.Bg.KEEP to "Keep", com.wizlabs.photofit.data.Bg.WHITE to "White", com.wizlabs.photofit.data.Bg.LIGHT to "Light blue")) Chip(l, bg == v) { bg = v }
+                }
+                note?.let { Spacer(Modifier.height(6.dp)); Text(it, color = Wiz.Warn, style = MaterialTheme.typography.bodySmall) }
+            }
             if (part.kind == PartKind.PHOTO) {
                 Spacer(Modifier.height(16.dp))
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -207,7 +234,21 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                     val r = CropMath.rect(cs, bb.width, bb.height, photoAspect)
                     val withStrip = nameDate && part.kind == PartKind.PHOTO
                     val photoH = if (withStrip) (target.h * (1 - NameDateStrip.BAND)).roundToInt() else target.h
-                    val cropped = if (inkPart && clean) cleanedCrop(bb, r, target.w, photoH, strength, ink) else Render.crop(bb, r, target.w, photoH)
+                    var cropped = if (inkPart && clean) cleanedCrop(bb, r, target.w, photoH, strength, ink) else Render.crop(bb, r, target.w, photoH)
+                    val bgColor = if (photoPart) com.wizlabs.photofit.engine.BackgroundSwap.colorFor(bg, part.bgColor) else null
+                    Work.notice = null
+                    if (bgColor != null) {
+                        // segment at up to 2x the output size for cleaner hair edges, then scale down
+                        val k = minOf(2f, r.width / target.w, 1024f / maxOf(target.w, photoH)).coerceAtLeast(1f)
+                        val big = Render.crop(bb, r, (target.w * k).roundToInt(), (photoH * k).roundToInt())
+                        try {
+                            val swapped = com.wizlabs.photofit.engine.BackgroundSwap.apply(big, bgColor)
+                            cropped.recycle(); cropped = Bitmap.createScaledBitmap(swapped, target.w, photoH, true); if (cropped !== swapped) swapped.recycle()
+                            note = null
+                        } catch (e: com.wizlabs.photofit.engine.BackgroundSwap.NotReady) { note = e.message; Work.notice = "Background not changed: " + e.message }
+                        catch (e: Exception) { note = "Could not change the background on this photo."; Work.notice = note }
+                        big.recycle()
+                    }
                     val full = if (withStrip) {
                         val f = Bitmap.createBitmap(target.w, target.h, Bitmap.Config.ARGB_8888)
                         android.graphics.Canvas(f).apply { drawColor(android.graphics.Color.WHITE); drawBitmap(cropped, 0f, 0f, null) }

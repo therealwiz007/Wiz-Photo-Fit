@@ -59,6 +59,13 @@ dependencies {
     implementation("androidx.exifinterface:exifinterface:1.4.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    // On-device ML Kit through Google Play services ("thin" clients): the models are fetched once by Play
+    // services and run on the phone. Keeps the APK small (the bundled selfie model alone is ~21 MB per ABI)
+    // and the app itself needs no INTERNET permission.
+    implementation("com.google.android.gms:play-services-mlkit-subject-segmentation:16.0.0-beta1")
+    implementation("com.google.android.gms:play-services-mlkit-face-detection:17.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
 }

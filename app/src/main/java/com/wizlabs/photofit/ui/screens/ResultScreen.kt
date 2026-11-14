@@ -127,6 +127,7 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBac
                     Spacer(Modifier.height(10.dp))
                     Text("${o.widthPx} × ${o.heightPx} px  ·  ${Units.fmt(Units.pxToCm(o.widthPx, o.dpi))} × ${Units.fmt(Units.pxToCm(o.heightPx, o.dpi))} cm @ ${o.dpi} dpi  ·  ${o.format.ext.uppercase()}",
                         color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
+                    Work.notice?.let { Spacer(Modifier.height(6.dp)); Text(it, color = Wiz.Warn, style = MaterialTheme.typography.bodySmall) }
                     if (o.padded) Text("Padded to reach the minimum size (image unchanged).", color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
                     if (saved) Text(if (Exporter.canAutoSave()) "Saved to ${if (o.format.ext == "pdf") "Download" else "Pictures"}/${Exporter.FOLDER}" else "Saved",
                         color = Wiz.Good, style = MaterialTheme.typography.bodySmall)
