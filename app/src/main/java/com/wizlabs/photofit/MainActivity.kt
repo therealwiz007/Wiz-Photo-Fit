@@ -91,7 +91,8 @@ private fun App() {
                 Screen.Signature -> StubScreen("Signature", nav::pop)
                 Screen.Joiner -> StubScreen("Join photo + signature", nav::pop)
                 Screen.Saved -> StubScreen("Saved", nav::pop)
-                is Screen.Builder -> StubScreen("Custom size", nav::pop)
+                is Screen.Builder -> com.wizlabs.photofit.ui.screens.PresetBuilderScreen(repo, s.editId, s.copyFrom,
+                    onSaved = { id -> nav.pop(); if (s.editId == null) nav.push(Screen.ExamDetail(id)) }, onBack = nav::pop)
                 is Screen.Import -> StubScreen("Import preset", nav::pop)
             }
         }

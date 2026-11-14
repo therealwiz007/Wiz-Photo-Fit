@@ -64,6 +64,7 @@ import com.wizlabs.photofit.engine.CropState
 import com.wizlabs.photofit.engine.Decode
 import com.wizlabs.photofit.engine.NameDateStrip
 import com.wizlabs.photofit.engine.Render
+import com.wizlabs.photofit.engine.SignatureCleaner
 import com.wizlabs.photofit.ui.components.GhostButton
 import com.wizlabs.photofit.ui.components.PrimaryButton
 import com.wizlabs.photofit.ui.components.SpecText
@@ -92,6 +93,10 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
     // aspect of the photo area (the strip, when on, takes the bottom of the image)
     val photoAspect = if (nameDate && part.kind == PartKind.PHOTO) target.w / (target.h * (1 - NameDateStrip.BAND)) else target.w.toFloat() / target.h
     var crop by remember { mutableStateOf<CropState?>(null) }
+    val inkPart = part.kind == PartKind.SIGNATURE || part.kind == PartKind.PARENT_SIGNATURE || part.kind == PartKind.DECLARATION || part.kind == PartKind.THUMB
+    var clean by rememberSaveable { mutableStateOf(inkPart) }
+    var strength by rememberSaveable { mutableStateOf(0.5f) }
+    var ink by rememberSaveable { mutableStateOf(if (part.kind == PartKind.THUMB) SignatureCleaner.Ink.KEEP else SignatureCleaner.Ink.BLACK) }
 
     LaunchedEffect(Unit) {
         if (bmp == null) {
@@ -173,6 +178,25 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                     Field("Date (dd-mm-yyyy)", date) { date = it }
                 }
             }
+            if (inkPart) {
+                Spacer(Modifier.height(16.dp))
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Clean paper", color = Wiz.Text, style = MaterialTheme.typography.titleMedium)
+                        Text("White background, sharp ink", color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
+                    }
+                    Switch(clean, { clean = it }, colors = SwitchDefaults.colors(checkedTrackColor = Wiz.Accent, checkedThumbColor = Wiz.OnAccent))
+                }
+                if (clean) {
+                    Text("Strength", color = Wiz.Muted, style = MaterialTheme.typography.labelMedium)
+                    androidx.compose.material3.Slider(strength, { strength = it },
+                        colors = androidx.compose.material3.SliderDefaults.colors(thumbColor = Wiz.Accent, activeTrackColor = Wiz.Accent))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        for ((v, l) in listOf(SignatureCleaner.Ink.BLACK to "Black ink", SignatureCleaner.Ink.BLUE to "Blue ink", SignatureCleaner.Ink.KEEP to "Keep colour"))
+                            Chip(l, ink == v) { ink = v }
+                    }
+                }
+            }
             Spacer(Modifier.height(20.dp))
         }
         PrimaryButton(if (busy) "Making…" else "Make ${part.label.lowercase()}", {
@@ -183,7 +207,7 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                     val r = CropMath.rect(cs, bb.width, bb.height, photoAspect)
                     val withStrip = nameDate && part.kind == PartKind.PHOTO
                     val photoH = if (withStrip) (target.h * (1 - NameDateStrip.BAND)).roundToInt() else target.h
-                    val cropped = Render.crop(bb, r, target.w, photoH)
+                    val cropped = if (inkPart && clean) cleanedCrop(bb, r, target.w, photoH, strength, ink) else Render.crop(bb, r, target.w, photoH)
                     val full = if (withStrip) {
                         val f = Bitmap.createBitmap(target.w, target.h, Bitmap.Config.ARGB_8888)
                         android.graphics.Canvas(f).apply { drawColor(android.graphics.Color.WHITE); drawBitmap(cropped, 0f, 0f, null) }
@@ -211,4 +235,16 @@ fun Field(label: String, value: String, modifier: Modifier = Modifier, keyboard:
                 cursorBrush = SolidColor(Wiz.Accent), keyboardOptions = keyboard, modifier = Modifier.fillMaxWidth())
         }
     }
+}
+
+/** Clean at up to 2x the target resolution (sharper strokes), then scale to the exact size. */
+private fun cleanedCrop(src: Bitmap, r: com.wizlabs.photofit.engine.RectF4, w: Int, h: Int, strength: Float, ink: SignatureCleaner.Ink): Bitmap {
+    val k = minOf(2f, r.width / w).coerceAtLeast(1f)
+    val ww = (w * k).roundToInt(); val hh = (h * k).roundToInt()
+    val big = Render.crop(src, r, ww, hh)
+    val px = IntArray(ww * hh); big.getPixels(px, 0, ww, 0, 0, ww, hh)
+    val out = SignatureCleaner.clean(px, ww, hh, strength, ink)
+    big.setPixels(out, 0, ww, 0, 0, ww, hh)
+    if (ww == w && hh == h) return big
+    return Bitmap.createScaledBitmap(big, w, h, true).also { big.recycle() }
 }
