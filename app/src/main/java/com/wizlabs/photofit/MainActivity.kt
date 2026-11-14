@@ -95,7 +95,7 @@ private fun App(link: String?) {
                     )
                 }
                 Screen.IdList -> StubScreen("ID / Passport", nav::pop)
-                Screen.Compress -> StubScreen("Compress", nav::pop)
+                Screen.Compress -> com.wizlabs.photofit.ui.screens.CompressScreen(onBack = nav::pop)
                 Screen.Signature -> StubScreen("Signature", nav::pop)
                 Screen.Joiner -> StubScreen("Join photo + signature", nav::pop)
                 Screen.Saved -> StubScreen("Saved", nav::pop)
