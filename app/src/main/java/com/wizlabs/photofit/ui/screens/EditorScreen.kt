@@ -1,0 +1,214 @@
+package com.wizlabs.photofit.ui.screens
+
+import android.graphics.Bitmap
+import android.graphics.Matrix
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.wizlabs.photofit.data.PartKind
+import com.wizlabs.photofit.data.Work
+import com.wizlabs.photofit.engine.CropMath
+import com.wizlabs.photofit.engine.CropState
+import com.wizlabs.photofit.engine.Decode
+import com.wizlabs.photofit.engine.NameDateStrip
+import com.wizlabs.photofit.engine.Render
+import com.wizlabs.photofit.ui.components.GhostButton
+import com.wizlabs.photofit.ui.components.PrimaryButton
+import com.wizlabs.photofit.ui.components.SpecText
+import com.wizlabs.photofit.ui.components.TopBar
+import com.wizlabs.photofit.ui.components.Wiz
+import com.wizlabs.photofit.ui.motion.rememberHaptics
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
+
+@Composable
+fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
+    val part = Work.part ?: run { StubScreen("Nothing to edit", onBack); return }
+    val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val haptics = rememberHaptics()
+    var bmp by remember { mutableStateOf<Bitmap?>(Work.source) }
+    var img by remember { mutableStateOf<ImageBitmap?>(Work.source?.asImageBitmap()) }
+    var failed by remember { mutableStateOf(false) }
+    var busy by remember { mutableStateOf(false) }
+    val target = part.size.targetPx()
+    var nameDate by rememberSaveable { mutableStateOf(part.nameDate) }
+    var name by rememberSaveable { mutableStateOf("") }
+    var date by rememberSaveable { mutableStateOf(NameDateStrip.today()) }
+    // aspect of the photo area (the strip, when on, takes the bottom of the image)
+    val photoAspect = if (nameDate && part.kind == PartKind.PHOTO) target.w / (target.h * (1 - NameDateStrip.BAND)) else target.w.toFloat() / target.h
+    var crop by remember { mutableStateOf<CropState?>(null) }
+
+    LaunchedEffect(Unit) {
+        if (bmp == null) {
+            val b = withContext(Dispatchers.IO) {
+                val u = Work.sourceUri
+                runCatching { u?.let { Decode.load(ctx.contentResolver, it) } }
+                    .onFailure { android.util.Log.w("PhotoFit", "decode failed for $u", it) }
+                    .getOrNull().also { if (it == null) android.util.Log.w("PhotoFit", "decode null for $u") }
+            }
+            if (b == null) failed = true else { Work.source = b; bmp = b; img = b.asImageBitmap() }
+        }
+    }
+    val b = bmp
+    LaunchedEffect(b, photoAspect) { if (b != null) crop = CropMath.clamp(crop ?: CropState.centered(b.width, b.height), b.width, b.height, photoAspect) }
+
+    Column(Modifier.fillMaxSize().background(Wiz.Bg).navigationBarsPadding().imePadding()) {
+        TopBar(part.label, SpecText.line(part), onBack = onBack)
+        if (failed) { Text("Could not open this photo. Try another one.", color = Wiz.Bad, modifier = Modifier.padding(24.dp)); return@Column }
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(Modifier.height(8.dp))
+            val cs = crop; val im = img
+            Box(
+                Modifier.fillMaxWidth(if (photoAspect < 1f) 0.72f else 1f).aspectRatio(photoAspect)
+                    .clip(RoundedCornerShape(12.dp)).background(Wiz.Panel).border(1.dp, Wiz.Line, RoundedCornerShape(12.dp))
+                    .pointerInput(b, photoAspect) {
+                        detectTransformGestures { _, pan, zoom, _ ->
+                            val bb = b ?: return@detectTransformGestures
+                            var s = crop ?: return@detectTransformGestures
+                            if (zoom != 1f) s = CropMath.zoom(s, zoom, bb.width, bb.height, photoAspect)
+                            s = CropMath.pan(s, pan.x, pan.y, size.width.toFloat(), bb.width, bb.height, photoAspect)
+                            crop = s
+                        }
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                if (cs == null || im == null || b == null) CircularProgressIndicator(color = Wiz.Accent)
+                else Canvas(Modifier.fillMaxSize()) {
+                    val r = CropMath.rect(cs, b.width, b.height, photoAspect)
+                    drawImage(im, srcOffset = IntOffset(r.left.roundToInt(), r.top.roundToInt()),
+                        srcSize = IntSize(r.width.roundToInt().coerceAtLeast(1), r.height.roundToInt().coerceAtLeast(1)),
+                        dstSize = IntSize(size.width.roundToInt(), size.height.roundToInt()), filterQuality = androidx.compose.ui.graphics.FilterQuality.Medium)
+                    // corner brackets
+                    val arm = size.minDimension * 0.14f; val w = 4.dp.toPx(); val c = Wiz.Accent
+                    val e = w / 2
+                    for ((x, y, dx, dy) in listOf(listOf(e, e, 1f, 1f), listOf(size.width - e, e, -1f, 1f), listOf(e, size.height - e, 1f, -1f), listOf(size.width - e, size.height - e, -1f, -1f))) {
+                        drawLine(c, Offset(x, y), Offset(x + dx * arm, y), w, StrokeCap.Round); drawLine(c, Offset(x, y), Offset(x, y + dy * arm), w, StrokeCap.Round)
+                    }
+                    if (part.kind == PartKind.PHOTO || part.kind == PartKind.POSTCARD) {
+                        // head guide: face should fill this oval
+                        val ow = size.width * 0.52f; val oh = size.height * 0.5f
+                        drawOval(Wiz.Accent.copy(alpha = 0.7f), Offset((size.width - ow) / 2, size.height * 0.14f), Size(ow, oh), style = Stroke(2.dp.toPx()))
+                    }
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            Text("Pinch to zoom · drag to move", color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
+            Spacer(Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                GhostButton("Rotate", {
+                    val bb = b ?: return@GhostButton
+                    val r = Bitmap.createBitmap(bb, 0, 0, bb.width, bb.height, Matrix().apply { postRotate(90f) }, true)
+                    if (r !== bb) bb.recycle(); Work.source = r; bmp = r; img = r.asImageBitmap(); crop = CropState.centered(r.width, r.height)
+                }, icon = Icons.Default.Refresh)
+                GhostButton("Reset", { b?.let { crop = CropMath.clamp(CropState.centered(it.width, it.height), it.width, it.height, photoAspect) } })
+            }
+            if (part.kind == PartKind.PHOTO) {
+                Spacer(Modifier.height(16.dp))
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Name + date on photo", color = Wiz.Text, style = MaterialTheme.typography.titleMedium)
+                        Text(if (part.nameDate) "This form asks for it" else "Some forms ask for it", color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
+                    }
+                    Switch(nameDate, { nameDate = it }, colors = SwitchDefaults.colors(checkedTrackColor = Wiz.Accent, checkedThumbColor = Wiz.OnAccent))
+                }
+                if (nameDate) {
+                    Spacer(Modifier.height(8.dp))
+                    Field("Your name", name) { name = it }
+                    Spacer(Modifier.height(8.dp))
+                    Field("Date (dd-mm-yyyy)", date) { date = it }
+                }
+            }
+            Spacer(Modifier.height(20.dp))
+        }
+        PrimaryButton(if (busy) "Making…" else "Make ${part.label.lowercase()}", {
+            val bb = b ?: return@PrimaryButton; val cs = crop ?: return@PrimaryButton
+            busy = true; haptics.tap()
+            scope.launch {
+                val out = withContext(Dispatchers.Default) {
+                    val r = CropMath.rect(cs, bb.width, bb.height, photoAspect)
+                    val withStrip = nameDate && part.kind == PartKind.PHOTO
+                    val photoH = if (withStrip) (target.h * (1 - NameDateStrip.BAND)).roundToInt() else target.h
+                    val cropped = Render.crop(bb, r, target.w, photoH)
+                    val full = if (withStrip) {
+                        val f = Bitmap.createBitmap(target.w, target.h, Bitmap.Config.ARGB_8888)
+                        android.graphics.Canvas(f).apply { drawColor(android.graphics.Color.WHITE); drawBitmap(cropped, 0f, 0f, null) }
+                        cropped.recycle(); NameDateStrip.draw(f, name, date); f
+                    } else cropped
+                    Work.rendered?.recycle(); Work.rendered = full; Work.savedUri = null
+                    Render.encode(full, part)
+                }
+                Work.output = out; busy = false
+                if (out.ok) haptics.confirm() else haptics.reject()
+                onDone()
+            }
+        }, Modifier.fillMaxWidth().padding(16.dp), icon = Icons.Default.Check, enabled = !busy && b != null)
+    }
+}
+
+@Composable
+fun Field(label: String, value: String, modifier: Modifier = Modifier, keyboard: androidx.compose.foundation.text.KeyboardOptions = androidx.compose.foundation.text.KeyboardOptions.Default, onChange: (String) -> Unit) {
+    Column(modifier.fillMaxWidth()) {
+        Text(label, color = Wiz.Muted, style = MaterialTheme.typography.labelMedium)
+        Spacer(Modifier.height(4.dp))
+        Box(Modifier.fillMaxWidth().heightIn(min = 50.dp).clip(RoundedCornerShape(14.dp)).background(Wiz.Panel)
+            .border(1.dp, Wiz.Line, RoundedCornerShape(14.dp)).padding(horizontal = 14.dp), contentAlignment = Alignment.CenterStart) {
+            BasicTextField(value, onChange, singleLine = true, textStyle = TextStyle(color = Wiz.Text, fontSize = 17.sp),
+                cursorBrush = SolidColor(Wiz.Accent), keyboardOptions = keyboard, modifier = Modifier.fillMaxWidth())
+        }
+    }
+}

@@ -54,6 +54,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun App() {
     val nav = remember { Nav() }
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    val repo = remember { com.wizlabs.photofit.data.PresetRepo(ctx.applicationContext) }
     val peek = LocalBackPeek.current
     // Once the back transition has played, drop the peek so the next visit starts full size.
     LaunchedEffect(nav.top) { kotlinx.coroutines.delay(650); if (peek != null && !peek.dragging) peek.reset() }
@@ -74,8 +76,16 @@ private fun App() {
             when (s) {
                 Screen.Home -> HomeScreen(open = nav::push)
                 Screen.About -> AboutScreen(onBack = nav::pop)
-                Screen.ExamList -> StubScreen("Exam Photo", nav::pop)
-                is Screen.ExamDetail -> StubScreen("Exam", nav::pop)
+                Screen.ExamList -> com.wizlabs.photofit.ui.screens.ExamListScreen(repo, nav::push, nav::pop)
+                is Screen.ExamDetail -> com.wizlabs.photofit.ui.screens.ExamDetailScreen(repo, s.presetId, nav::push, nav::pop)
+                is Screen.Editor -> com.wizlabs.photofit.ui.screens.EditorScreen(onDone = { nav.replace(Screen.Result) }, onBack = nav::pop)
+                Screen.Result -> {
+                    val next = com.wizlabs.photofit.data.Work.preset?.parts?.getOrNull(com.wizlabs.photofit.data.Work.partIndex + 1)
+                    com.wizlabs.photofit.ui.screens.ResultScreen(
+                        onNextPart = if (next != null) ({ nav.pop() }) else null,
+                        onBack = nav::pop,
+                    )
+                }
                 Screen.IdList -> StubScreen("ID / Passport", nav::pop)
                 Screen.Compress -> StubScreen("Compress", nav::pop)
                 Screen.Signature -> StubScreen("Signature", nav::pop)
