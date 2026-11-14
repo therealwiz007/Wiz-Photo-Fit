@@ -115,7 +115,8 @@ fun SavedScreen(onBack: () -> Unit) {
                 Column(Modifier.clickable {
                     ctx.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply { type = "image/*"; putExtra(Intent.EXTRA_STREAM, f.uri); addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) }, "Share"))
                 }) {
-                    Box(Modifier.fillMaxWidth().aspectRatio(0.8f).clip(RoundedCornerShape(10.dp)).background(Wiz.Panel), contentAlignment = Alignment.Center) {
+                    Box(Modifier.fillMaxWidth().aspectRatio(0.8f).clip(RoundedCornerShape(10.dp)).background(Wiz.Panel)
+                        .then(if (thumb == null) with(com.wizlabs.photofit.ui.components.Loading) { Modifier.shim() } else Modifier), contentAlignment = Alignment.Center) {
                         thumb?.let { Image(it, null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize()) }
                     }
                     Text("${TargetEncoder.kb(f.bytes.toInt())} KB", color = Wiz.Accent, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 4.dp))
@@ -156,7 +157,7 @@ fun JoinerScreen(onResult: () -> Unit, onBack: () -> Unit) {
             SectionLabel("File size under")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { listOf(20, 50, 100, 200).forEach { v -> Chip("$v KB", kbMax == v) { kbMax = v } } }
         }
-        PrimaryButton(if (busy) "Joining…" else "Join", {
+        PrimaryButton(if (busy) "Joining photo + signature…" else "Join", {
             val p = photo ?: return@PrimaryButton; val s = sign ?: return@PrimaryButton
             busy = true
             scope.launch {

@@ -34,6 +34,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -98,12 +99,16 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
     var bg by rememberSaveable { mutableStateOf(part.background) }
     var faceLocked by remember { mutableStateOf(false) }
     var note by remember { mutableStateOf<String?>(null) }
+    val model by com.wizlabs.photofit.engine.ModelStatus.state.collectAsState()
+    var step by remember { mutableStateOf(-1) }
+    var steps by remember { mutableStateOf(emptyList<com.wizlabs.photofit.ui.components.Step>()) }
+    var live by remember { mutableStateOf<String?>(null) }
     var clean by rememberSaveable { mutableStateOf(inkPart) }
     var strength by rememberSaveable { mutableStateOf(0.5f) }
     var ink by rememberSaveable { mutableStateOf(if (part.kind == PartKind.THUMB) SignatureCleaner.Ink.KEEP else SignatureCleaner.Ink.BLACK) }
 
     LaunchedEffect(Unit) {
-        if (photoPart && part.background != com.wizlabs.photofit.data.Bg.KEEP) com.wizlabs.photofit.engine.BackgroundSwap.prepare(ctx.applicationContext)
+        if (photoPart) com.wizlabs.photofit.engine.ModelStatus.ensure(ctx.applicationContext)
         if (bmp == null) {
             val b = withContext(Dispatchers.IO) {
                 val u = Work.sourceUri
@@ -115,12 +120,13 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
         }
     }
     val b = bmp
-    LaunchedEffect(b, photoAspect) {
+    LaunchedEffect(b, photoAspect, model is com.wizlabs.photofit.engine.ModelStatus.State.Ready) {
         if (b == null) return@LaunchedEffect
         crop = CropMath.clamp(crop ?: CropState.centered(b.width, b.height), b.width, b.height, photoAspect)
         if (photoPart && !faceLocked) {
             val face = com.wizlabs.photofit.engine.FaceFinder.biggest(b)
             if (face != null) {
+                com.wizlabs.photofit.engine.ModelStatus.markReady()
                 val ratio = com.wizlabs.photofit.data.IdPresets.headRatio[Work.preset?.id] ?: 0.6f
                 crop = CropMath.fitFace(face, b.width, b.height, photoAspect, headRatio = ratio)
                 faceLocked = true; haptics.tick()
@@ -128,6 +134,7 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
         }
     }
 
+    Box(Modifier.fillMaxSize()) {
     Column(Modifier.fillMaxSize().background(Wiz.Bg).navigationBarsPadding().imePadding()) {
         TopBar(part.label, SpecText.line(part), onBack = onBack)
         if (failed) { Text("Could not open this photo. Try another one.", color = Wiz.Bad, modifier = Modifier.padding(24.dp)); return@Column }
@@ -148,7 +155,10 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                     },
                 contentAlignment = Alignment.Center,
             ) {
-                if (cs == null || im == null || b == null) CircularProgressIndicator(color = Wiz.Accent)
+                if (cs == null || im == null || b == null) {
+                    Box(Modifier.fillMaxSize().background(Wiz.PanelHi).then(Modifier.shimmerSafe()))
+                    Text("Opening your photo…", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
+                }
                 else Canvas(Modifier.fillMaxSize()) {
                     val r = CropMath.rect(cs, b.width, b.height, photoAspect)
                     drawImage(im, srcOffset = IntOffset(r.left.roundToInt(), r.top.roundToInt()),
@@ -186,6 +196,10 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                 Spacer(Modifier.height(4.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     for ((v, l) in listOf(com.wizlabs.photofit.data.Bg.KEEP to "Keep", com.wizlabs.photofit.data.Bg.WHITE to "White", com.wizlabs.photofit.data.Bg.LIGHT to "Light blue")) Chip(l, bg == v) { bg = v }
+                }
+                if (model !is com.wizlabs.photofit.engine.ModelStatus.State.Ready || note != null) {
+                    Spacer(Modifier.height(10.dp))
+                    com.wizlabs.photofit.ui.components.ModelReadyCard(model, onRetry = { com.wizlabs.photofit.engine.ModelStatus.retry(ctx.applicationContext) })
                 }
                 note?.let { Spacer(Modifier.height(6.dp)); Text(it, color = Wiz.Warn, style = MaterialTheme.typography.bodySmall) }
             }
@@ -229,12 +243,25 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
         PrimaryButton(if (busy) "Making…" else "Make ${part.label.lowercase()}", {
             val bb = b ?: return@PrimaryButton; val cs = crop ?: return@PrimaryButton
             busy = true; haptics.tap()
+            val willBg = photoPart && bg != com.wizlabs.photofit.data.Bg.KEEP
+            steps = buildList {
+                add(com.wizlabs.photofit.ui.components.Step("Cropping to ${target.w} × ${target.h} px"))
+                if (willBg) add(com.wizlabs.photofit.ui.components.Step("Changing the background", "Finding you and smoothing the hair edge"))
+                if (inkPart && clean) add(com.wizlabs.photofit.ui.components.Step("Cleaning the paper", "White paper, sharp ink"))
+                if (nameDate && part.kind == PartKind.PHOTO) add(com.wizlabs.photofit.ui.components.Step("Adding name and date"))
+                add(com.wizlabs.photofit.ui.components.Step("Fitting to ${SpecText.kb(part)}", "Trying the best quality that fits"))
+                add(com.wizlabs.photofit.ui.components.Step("Done"))
+            }
+            step = 0; live = null
             scope.launch {
+                val started = System.currentTimeMillis()
                 val out = withContext(Dispatchers.Default) {
+                    fun next() { step++ }
                     val r = CropMath.rect(cs, bb.width, bb.height, photoAspect)
                     val withStrip = nameDate && part.kind == PartKind.PHOTO
                     val photoH = if (withStrip) (target.h * (1 - NameDateStrip.BAND)).roundToInt() else target.h
-                    var cropped = if (inkPart && clean) cleanedCrop(bb, r, target.w, photoH, strength, ink) else Render.crop(bb, r, target.w, photoH)
+                    var cropped = Render.crop(bb, r, target.w, photoH)
+                    next()
                     val bgColor = if (photoPart) com.wizlabs.photofit.engine.BackgroundSwap.colorFor(bg, part.bgColor) else null
                     Work.notice = null
                     if (bgColor != null) {
@@ -245,25 +272,42 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                             val swapped = com.wizlabs.photofit.engine.BackgroundSwap.apply(big, bgColor)
                             cropped.recycle(); cropped = Bitmap.createScaledBitmap(swapped, target.w, photoH, true); if (cropped !== swapped) swapped.recycle()
                             note = null
-                        } catch (e: com.wizlabs.photofit.engine.BackgroundSwap.NotReady) { note = e.message; Work.notice = "Background not changed: " + e.message }
-                        catch (e: Exception) { note = "Could not change the background on this photo."; Work.notice = note }
-                        big.recycle()
+                        } catch (e: com.wizlabs.photofit.engine.BackgroundSwap.NotReady) {
+                            note = e.message; Work.notice = "Background not changed: " + e.message
+                            steps = steps.toMutableList().also { l -> l[step] = com.wizlabs.photofit.ui.components.Step("Background kept as it is", "Tool not ready yet", failed = true) }
+                        } catch (e: Exception) {
+                            note = "Could not change the background on this photo."; Work.notice = note
+                            steps = steps.toMutableList().also { l -> l[step] = com.wizlabs.photofit.ui.components.Step("Background kept as it is", null, failed = true) }
+                        }
+                        big.recycle(); next()
                     }
+                    if (inkPart && clean) { cropped.recycle(); cropped = cleanedCrop(bb, r, target.w, photoH, strength, ink); next() }
                     val full = if (withStrip) {
                         val f = Bitmap.createBitmap(target.w, target.h, Bitmap.Config.ARGB_8888)
                         android.graphics.Canvas(f).apply { drawColor(android.graphics.Color.WHITE); drawBitmap(cropped, 0f, 0f, null) }
-                        cropped.recycle(); NameDateStrip.draw(f, name, date); f
+                        cropped.recycle(); NameDateStrip.draw(f, name, date); next(); f
                     } else cropped
                     Work.rendered?.recycle(); Work.rendered = full; Work.savedUri = null
-                    Render.encode(full, part)
+                    val o = Render.encode(full, part)
+                    live = "${com.wizlabs.photofit.engine.TargetEncoder.kb(o.bytes.size)} KB"
+                    step = steps.size; o
                 }
-                Work.output = out; busy = false
+                // keep the steps on screen long enough to read (never adds more than ~0.8 s)
+                kotlinx.coroutines.delay((900 - (System.currentTimeMillis() - started)).coerceIn(0, 900))
+                Work.output = out; busy = false; step = -1
                 if (out.ok) haptics.confirm() else haptics.reject()
                 onDone()
             }
         }, Modifier.fillMaxWidth().padding(16.dp), icon = Icons.Default.Check, enabled = !busy && b != null)
     }
+    com.wizlabs.photofit.ui.components.ProcessingOverlay(
+        visible = step >= 0, title = if (step >= steps.lastIndex && steps.isNotEmpty()) "Ready!" else "Making your ${part.label.lowercase()}",
+        steps = steps, current = step, image = img, aspect = photoAspect, live = live,
+    )
+    }
 }
+
+private fun Modifier.shimmerSafe(): Modifier = with(com.wizlabs.photofit.ui.components.Loading) { this@shimmerSafe.shim() }
 
 @Composable
 fun Field(label: String, value: String, modifier: Modifier = Modifier, keyboard: androidx.compose.foundation.text.KeyboardOptions = androidx.compose.foundation.text.KeyboardOptions.Default, onChange: (String) -> Unit) {

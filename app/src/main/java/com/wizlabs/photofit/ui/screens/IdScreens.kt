@@ -117,6 +117,7 @@ fun PrintSheetScreen(onBack: () -> Unit) {
     var preview by remember { mutableStateOf<ImageBitmap?>(null) }
     var bytes by remember { mutableStateOf<ByteArray?>(null) }
     LaunchedEffect(layout, copies, cut) {
+        preview = null
         preview = withContext(Dispatchers.Default) {
             val small = PrintSheet.renderJpeg(layout.copy(), tile, copies, cut)
             android.graphics.BitmapFactory.decodeByteArray(small, 0, small.size, android.graphics.BitmapFactory.Options().apply { inSampleSize = 4 })?.asImageBitmap()
@@ -125,7 +126,12 @@ fun PrintSheetScreen(onBack: () -> Unit) {
     Column(Modifier.fillMaxSize().background(Wiz.Bg).navigationBarsPadding()) {
         TopBar("Print sheet", "${Units.fmt(wMm)} × ${Units.fmt(hMm)} mm photos", onBack = onBack)
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            preview?.let { Image(it, null, Modifier.fillMaxWidth(if (paper == PrintSheet.Paper.A4) 0.7f else 0.6f).aspectRatio(paper.wMm / paper.hMm).enterRise(0).clip(RoundedCornerShape(6.dp))) }
+            val pv = preview
+            val sheetMod = Modifier.fillMaxWidth(if (paper == PrintSheet.Paper.A4) 0.7f else 0.6f).aspectRatio(paper.wMm / paper.hMm).clip(RoundedCornerShape(6.dp))
+            if (pv != null) Image(pv, null, sheetMod.enterRise(0))
+            else androidx.compose.foundation.layout.Box(sheetMod.background(Wiz.PanelHi).then(with(com.wizlabs.photofit.ui.components.Loading) { Modifier.shim() }), contentAlignment = Alignment.Center) {
+                Text("Laying out ${copies} photos…", color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
+            }
             Spacer(Modifier.height(12.dp))
             SectionLabel("Paper")
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { PrintSheet.Paper.entries.forEach { Chip(it.label, paper == it) { paper = it } } }

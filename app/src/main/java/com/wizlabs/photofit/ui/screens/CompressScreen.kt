@@ -111,6 +111,20 @@ fun CompressScreen(onBack: () -> Unit) {
                 listOf(ImgFormat.JPG, ImgFormat.WEBP, ImgFormat.PNG).forEach { f -> Chip(f.ext.uppercase(), fmt == f) { fmt = f } }
             }
         }
+        if (running || (done.isNotEmpty() && done.size < items.size)) {
+            val finished = items.count { it is BatchCompressor.Item.Done || it is BatchCompressor.Item.Failed }
+            val frac by animateFloatAsState(finished / items.size.toFloat(), spring(0.9f, 200f), label = "all")
+            Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Compressing $finished of ${items.size}", color = Wiz.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                    Text("${(frac * 100).toInt()}%", color = Wiz.Accent, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                }
+                Spacer(Modifier.height(8.dp))
+                Box(Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)).background(Wiz.PanelHi)) {
+                    Box(Modifier.matchParentSize().graphicsLayer { scaleX = frac; transformOrigin = TransformOrigin(0f, 0.5f) }.background(Wiz.Accent))
+                }
+            }
+        }
         LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             itemsIndexed(items, key = { i, it -> it.uri.toString() + i }, contentType = { _, _ -> "row" }) { i, it ->
                 Box(Modifier.animateItem(fadeInSpec = tween(180), placementSpec = spring(1f, 400f, IntOffset.VisibilityThreshold), fadeOutSpec = tween(120))) { BatchRow(i, it) }
@@ -154,11 +168,12 @@ private fun BatchRow(i: Int, it: BatchCompressor.Item) {
         Box {
             // progress bar as a scaleX transform (no layout animation)
             Box(Modifier.matchParentSize().graphicsLayer { scaleX = progress; transformOrigin = TransformOrigin(0f, 0.5f) }.background(Wiz.Accent.copy(alpha = 0.08f)))
+            if (it is BatchCompressor.Item.Working) Box(Modifier.matchParentSize().then(with(com.wizlabs.photofit.ui.components.Loading) { Modifier.shim() }))
             Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("Photo ${i + 1}", color = Wiz.Text, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 when (it) {
                     is BatchCompressor.Item.Queued -> Text("Waiting", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
-                    is BatchCompressor.Item.Working -> Text("Working…", color = Wiz.Accent, style = MaterialTheme.typography.bodyMedium)
+                    is BatchCompressor.Item.Working -> Text("Squeezing…", color = Wiz.Accent, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                     is BatchCompressor.Item.Failed -> Text(it.reason, color = Wiz.Bad, style = MaterialTheme.typography.bodyMedium)
                     is BatchCompressor.Item.Done -> Text("${TargetEncoder.kb(it.beforeBytes.toInt())} → ${TargetEncoder.kb(it.bytes.size)} KB  ·  ${it.w}×${it.h}",
                         color = if (it.ok) Wiz.Good else Wiz.Warn, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
