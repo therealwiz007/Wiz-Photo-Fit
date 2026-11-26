@@ -1,0 +1,1 @@
+Adds a non-blocking update prompt from Google Play. Still no ads, and everything else works offline as before.

@@ -152,12 +152,12 @@ fun Pill(text: String, color: Color = Wiz.AccentInk, modifier: Modifier = Modifi
     }
 }
 
-/** "No ads · No internet · 0 permissions" trust row. */
+/** "No ads · Works offline · 0 permissions" trust row. Offline is true for resizing; INTERNET is only for updates. */
 @Composable
 fun TrustStrip(modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
         Pill("No ads", Wiz.Good, icon = { GlyphNoAds(Wiz.Good) })
-        Pill("No internet", Wiz.Good, icon = { GlyphNoWifi(Wiz.Good) })
+        Pill("Works offline", Wiz.Good, icon = { GlyphNoWifi(Wiz.Good) })
         Pill("0 permissions", Wiz.Good, icon = { GlyphShield(Wiz.Good) })
     }
 }

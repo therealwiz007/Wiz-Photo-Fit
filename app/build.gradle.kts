@@ -12,8 +12,8 @@ android {
         applicationId = "com.wizlabs.photofit"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "1.2.0"
         // Ship only English resources (drops dozens of unused library translations).
         resourceConfigurations += listOf("en")
     }
@@ -58,6 +58,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.exifinterface:exifinterface:1.4.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 
     // On-device ML Kit through Google Play services ("thin" clients): the models are fetched once by Play
     // services and run on the phone. Keeps the APK small (the bundled selfie model alone is ~21 MB per ABI)

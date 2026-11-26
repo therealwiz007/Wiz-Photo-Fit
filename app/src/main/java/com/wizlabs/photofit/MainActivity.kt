@@ -23,7 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.wizlabs.photofit.ui.components.Wiz
 import com.wizlabs.photofit.ui.components.WizTheme
@@ -45,7 +49,18 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
         )
         val link = intent?.data?.toString()
-        setContent { WizTheme { ProvideWizMotion { App(link) } } }
+        setContent {
+            WizTheme {
+                ProvideWizMotion {
+                    Box(Modifier.fillMaxSize()) {
+                        App(link)
+                        Box(Modifier.align(Alignment.BottomCenter).windowInsetsPadding(WindowInsets.navigationBars)) {
+                            com.wizlabs.photofit.ui.components.UpdatePrompt()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onNewIntent(intent: android.content.Intent) {

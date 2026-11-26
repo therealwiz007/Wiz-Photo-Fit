@@ -2,7 +2,7 @@
 
 Offline Android app by Wiz Labs: resize exam / government-form photos and signatures to the exact size and KB, make ID / passport photos with a print sheet, and batch-compress images.
 
-- **No ads · No internet · 0 permissions** (the app has no INTERNET permission; the optional face and background models are fetched once by Google Play services). Photos come from the system Photo Picker or camera app; everything runs on the phone.
+- **No ads · Works offline · 1 permission (internet, only for Google Play app updates)**. Face and background models are fetched once by Google Play services. Photos come from the system Photo Picker or camera app; everything runs on the phone.
 - 36 built-in exam presets (SSC, UPSC, RRB, IBPS/SBI/RBI, JEE, NEET, CUET, GATE, CAT, state PSCs, school entrances, PAN …) compiled from public notices, plus your own custom sizes (px / cm / mm / inch, DPI, KB range) that you can share as a code or QR.
 - Kotlin + Jetpack Compose, minSdk 26, targetSdk 36. Package `com.wizlabs.photofit`.
 

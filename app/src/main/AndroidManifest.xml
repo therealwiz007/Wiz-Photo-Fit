@@ -1,10 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- No permissions at all: photos come from the system Photo Picker or the system camera app,
-         results are saved through MediaStore (Android 10+) or the system save dialog. No internet. -->
-    <!-- ML Kit libraries add these for optional usage logging; the app never goes online, so remove them. -->
-    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+    <!-- Only INTERNET: used by Play In-App Updates (update prompt) and, later, ad SDKs. No ads are shown in this version.
+         Photos still come from the system Photo Picker or camera app; results are saved through MediaStore. -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:enableOnBackInvokedCallback="true"

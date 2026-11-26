@@ -1,4 +1,4 @@
-Wiz Photo Fit resizes your photo and signature to the exact size and KB that an online form asks for: SSC, UPSC, RRB railway, IBPS / SBI bank, NEET, JEE, CUET, GATE, state PSC, police and more. Pick your exam, pick a photo, and get a file that fits the limit, like 20–50 KB photo and 10–20 KB signature. Search your exam, crop with guides, and see a pass/fail check for size, KB and format before you save. Works offline with no internet permission and no permissions at all.
+Wiz Photo Fit resizes your photo and signature to the exact size and KB that an online form asks for: SSC, UPSC, RRB railway, IBPS / SBI bank, NEET, JEE, CUET, GATE, state PSC, police and more. Pick your exam, pick a photo, and get a file that fits the limit, like 20–50 KB photo and 10–20 KB signature. Search your exam, crop with guides, and see a pass/fail check for size, KB and format before you save. Works offline. Your photos never leave your phone.
 
 ★ EXAM PHOTO & SIGNATURE RESIZER
 • 36 ready sizes for government jobs and entrance exams: SSC CGL / CHSL / MTS / GD, UPSC, RRB NTPC / Group D, IBPS PO / Clerk, SBI PO / Clerk, RBI, JEE Main, JEE Advanced, NEET UG, NEET PG, CUET UG / PG, GATE, CAT, CLAT, NIFT, NATA, ICAR, UGC NET, CSIR NET, CTET, BPSC, MPSC, UP Police, Agniveer, Navodaya JNVST, Sainik School and PAN card
@@ -29,7 +29,7 @@ Wiz Photo Fit resizes your photo and signature to the exact size and KB that an 
 • Reduce the longest side, convert to JPG, WEBP or PNG, save all or share all
 
 ★ PRIVATE AND LIGHT
-• No login and no internet permission: your photos never leave your phone
+• No login and no ads: your photos never leave your phone
 • Uses Android's own photo picker and camera, so the app needs no storage or camera permission
 • Small download
 
