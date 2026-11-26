@@ -1,0 +1,1 @@
+New look: light Studio Marigold design and a new icon. Search your exam by name, recent forms on Home, a pass/fail check for size, KB and format on every result, a before/after slider, and Snip, a small helper who guides you. Size and KB results are unchanged. Light and dark themes.

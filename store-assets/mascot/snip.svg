@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
+  <title>Snip, the Wiz Photo Fit mascot</title>
+  <!-- feet -->
+  <rect x="33" y="90" width="13" height="6" rx="3" fill="#15151A"/>
+  <rect x="54" y="90" width="13" height="6" rx="3" fill="#15151A"/>
+  <!-- tape tail -->
+  <path d="M74 72 C84 76 90 84 88 94 L94 93 C96 82 90 72 80 68 Z" fill="#FFC400"/>
+  <!-- frame body, matte, photo -->
+  <rect x="22" y="18" width="56" height="60" rx="10" fill="#15151A"/>
+  <rect x="27" y="23" width="46" height="50" rx="6" fill="#FFFFFF"/>
+  <rect x="30" y="26" width="40" height="44" rx="4" fill="#BAE6FD"/>
+  <!-- cheeks, eyes, smile -->
+  <circle cx="36" cy="55" r="3.4" fill="#FDA4AF" fill-opacity=".5"/>
+  <circle cx="64" cy="55" r="3.4" fill="#FDA4AF" fill-opacity=".5"/>
+  <circle cx="41" cy="46" r="3" fill="#15151A"/>
+  <circle cx="59" cy="46" r="3" fill="#15151A"/>
+  <path d="M43 55 Q50 61 57 55" fill="none" stroke="#15151A" stroke-width="3.2" stroke-linecap="round"/>
+  <!-- tape-measure scarf with ticks -->
+  <rect x="19" y="66" width="62" height="8" rx="4" fill="#FFC400"/>
+  <g stroke="#8F6A00" stroke-width="1.1">
+    <path d="M25 66v5M31 66v3M37 66v3M43 66v5M49 66v3M55 66v3M61 66v5M67 66v3M73 66v3"/>
+  </g>
+  <!-- crop-mark hands -->
+  <path d="M71 16 L80 16 L80 25" fill="none" stroke="#15151A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" transform="rotate(-18 80 16)"/>
+  <path d="M29 84 L20 84 L20 75" fill="none" stroke="#15151A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

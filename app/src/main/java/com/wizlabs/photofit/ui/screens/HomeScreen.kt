@@ -107,14 +107,14 @@ fun HomeScreen(repo: PresetRepo, open: (Screen) -> Unit) {
                 }
             } else Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 for (h in hits) repo.find(h.id)?.let { p ->
-                    ResultRow(p.name, SpecText.line(p.parts.first())) { Recents.push(ctx, p.id); open(Screen.ExamDetail(p.id)) }
+                    ResultRow(p.name, p.parts.first().let { SpecText.px(it) + "  ·  " + SpecText.kb(it) }) { Recents.push(ctx, p.id); open(Screen.ExamDetail(p.id)) }
                 }
             }
             return@Column
         }
         if (recent.isNotEmpty()) {
             SectionLabel("Recent")
-            Row(Modifier.fillMaxWidth().verticalScroll(rememberScrollState(), enabled = false), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 for (p in recent.take(3)) ResultRow(p.name, null, Modifier.weight(1f)) { open(Screen.ExamDetail(p.id)) }
             }
         }

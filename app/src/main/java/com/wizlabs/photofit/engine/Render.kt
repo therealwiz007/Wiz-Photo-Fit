@@ -17,18 +17,49 @@ object Render {
         val quality: Int, val padded: Boolean, val ok: Boolean, val message: String?,
     ) { val kb: Float get() = bytes.size / 1024f }
 
-    /** Crop + resize to the exact target pixels on a white base (JPEG has no transparency). */
+    /**
+     * Crop + resize to the exact target pixels on a white base (JPEG has no transparency).
+     * Big reductions are halved step by step (exact 2×2 averaging, no skipped pixels), then the last <2× step uses
+     * Lanczos-3, so small exam-size files stay sharp instead of soft or jagged.
+     */
     fun crop(src: Bitmap, r: RectF4, w: Int, h: Int, base: Int = Color.WHITE): Bitmap {
+        val half = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
+        var cur = src
+        var cr = Rect(r.left.roundToInt(), r.top.roundToInt(), r.right.roundToInt().coerceAtMost(src.width), r.bottom.roundToInt().coerceAtMost(src.height))
+        while (cr.width() >= w * 2 && cr.height() >= h * 2) {
+            val nw = maxOf(w, cr.width() / 2); val nh = maxOf(h, cr.height() / 2)
+            val next = Bitmap.createBitmap(nw, nh, Bitmap.Config.ARGB_8888)
+            Canvas(next).apply { drawColor(base); drawBitmap(cur, cr, RectF(0f, 0f, nw.toFloat(), nh.toFloat()), half) }
+            if (cur !== src) cur.recycle()
+            cur = next; cr = Rect(0, 0, nw, nh)
+        }
         val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        val c = Canvas(out)
-        c.drawColor(base)
-        val p = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
-        val s = Rect(r.left.roundToInt(), r.top.roundToInt(), r.right.roundToInt().coerceAtMost(src.width), r.bottom.roundToInt().coerceAtMost(src.height))
-        // two-step downscale for big reductions keeps edges smooth (Paint filtering is bilinear only)
-        if (s.width() > w * 2) {
-            val mid = Bitmap.createScaledBitmap(Bitmap.createBitmap(src, s.left, s.top, s.width(), s.height()), w * 2, h * 2, true)
-            c.drawBitmap(mid, null, RectF(0f, 0f, w.toFloat(), h.toFloat()), p); mid.recycle()
-        } else c.drawBitmap(src, s, RectF(0f, 0f, w.toFloat(), h.toFloat()), p)
+        if (cr.width() > w || cr.height() > h) {
+            // Lanczos from the (at most 2x) region
+            val sw = cr.width(); val sh = cr.height()
+            val px = IntArray(sw * sh); cur.getPixels(px, 0, sw, cr.left, cr.top, sw, sh)
+            val flat = IntArray(sw * sh) { i -> val c = px[i]; val a = c ushr 24; if (a == 255) c else blendOn(base, c, a) }
+            val scaled = Resample.scale(flat, sw, sh, w, h)
+            out.setPixels(scaled, 0, w, 0, 0, w, h)
+        } else {
+            val c = Canvas(out); c.drawColor(base)
+            c.drawBitmap(cur, cr, RectF(0f, 0f, w.toFloat(), h.toFloat()), half)
+        }
+        if (cur !== src) cur.recycle()
+        return out
+    }
+
+    private fun blendOn(base: Int, c: Int, a: Int): Int {
+        fun ch(sh: Int) = (((c shr sh and 0xFF) * a + (base shr sh and 0xFF) * (255 - a)) / 255)
+        return (0xFF shl 24) or (ch(16) shl 16) or (ch(8) shl 8) or ch(0)
+    }
+
+    /** Light sharpening that undoes the softness of resizing. Returns a new bitmap; [bmp] is recycled by the caller. */
+    fun sharpen(bmp: Bitmap, amount: Float): Bitmap {
+        val w = bmp.width; val h = bmp.height
+        val px = IntArray(w * h); bmp.getPixels(px, 0, w, 0, 0, w, h)
+        val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        out.setPixels(Resample.unsharp(px, w, h, amount), 0, w, 0, 0, w, h)
         return out
     }
 

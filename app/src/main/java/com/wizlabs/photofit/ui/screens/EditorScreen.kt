@@ -272,7 +272,7 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                         val big = Render.crop(bb, r, (target.w * k).roundToInt(), (photoH * k).roundToInt())
                         try {
                             val swapped = com.wizlabs.photofit.engine.BackgroundSwap.apply(big, bgColor)
-                            cropped.recycle(); cropped = Bitmap.createScaledBitmap(swapped, target.w, photoH, true); if (cropped !== swapped) swapped.recycle()
+                            cropped.recycle(); cropped = run { val sp = IntArray(swapped.width * swapped.height); swapped.getPixels(sp, 0, swapped.width, 0, 0, swapped.width, swapped.height); Bitmap.createBitmap(com.wizlabs.photofit.engine.Resample.scale(sp, swapped.width, swapped.height, target.w, photoH), target.w, photoH, Bitmap.Config.ARGB_8888) }; swapped.recycle()
                             note = null
                         } catch (e: com.wizlabs.photofit.engine.BackgroundSwap.NotReady) {
                             note = e.message; Work.notice = "Background not changed: " + e.message
@@ -284,6 +284,7 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                         big.recycle(); next()
                     }
                     if (inkPart && clean) { cropped.recycle(); cropped = cleanedCrop(bb, r, target.w, photoH, strength, ink); next() }
+                    cropped = Render.sharpen(cropped, if (inkPart) 0.5f else 0.35f).also { cropped.recycle() }
                     val full = if (withStrip) {
                         val f = Bitmap.createBitmap(target.w, target.h, Bitmap.Config.ARGB_8888)
                         android.graphics.Canvas(f).apply { drawColor(android.graphics.Color.WHITE); drawBitmap(cropped, 0f, 0f, null) }
@@ -326,12 +327,12 @@ fun Field(label: String, value: String, modifier: Modifier = Modifier, keyboard:
 
 /** Clean at up to 2x the target resolution (sharper strokes), then scale to the exact size. */
 private fun cleanedCrop(src: Bitmap, r: com.wizlabs.photofit.engine.RectF4, w: Int, h: Int, strength: Float, ink: SignatureCleaner.Ink): Bitmap {
-    val k = minOf(2f, r.width / w).coerceAtLeast(1f)
+    // Clean at up to 4x the output so thin pen strokes survive, then Lanczos down: smooth, crisp ink instead of blur.
+    val k = minOf(4f, r.width / w).coerceAtLeast(1f)
     val ww = (w * k).roundToInt(); val hh = (h * k).roundToInt()
     val big = Render.crop(src, r, ww, hh)
-    val px = IntArray(ww * hh); big.getPixels(px, 0, ww, 0, 0, ww, hh)
+    val px = IntArray(ww * hh); big.getPixels(px, 0, ww, 0, 0, ww, hh); big.recycle()
     val out = SignatureCleaner.clean(px, ww, hh, strength, ink)
-    big.setPixels(out, 0, ww, 0, 0, ww, hh)
-    if (ww == w && hh == h) return big
-    return Bitmap.createScaledBitmap(big, w, h, true).also { big.recycle() }
+    val scaled = if (ww == w && hh == h) out else com.wizlabs.photofit.engine.Resample.scale(out, ww, hh, w, h)
+    return Bitmap.createBitmap(scaled, w, h, Bitmap.Config.ARGB_8888)
 }

@@ -102,3 +102,37 @@ class SnipBrainTest {
             .forEach { assertTrue(r(it).line, r(it).line.length <= SnipBrain.MAX_LINE) }
     }
 }
+
+class RecentsTest {
+    @Test fun newestFirstNoDuplicates() = assertEquals(listOf("c", "a", "b"), com.wizlabs.photofit.data.Recents.merge(listOf("a", "b", "c"), "c"))
+    @Test fun capsAtFive() = assertEquals(listOf("g", "a", "b", "c", "d"), com.wizlabs.photofit.data.Recents.merge(listOf("a", "b", "c", "d", "e"), "g"))
+    @Test fun emptyStart() = assertEquals(listOf("x"), com.wizlabs.photofit.data.Recents.merge(emptyList(), "x"))
+}
+
+class ResampleTest {
+    private fun px(r: Int, g: Int, b: Int) = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
+    @Test fun flatStaysFlat() {
+        val out = com.wizlabs.photofit.engine.Resample.scale(IntArray(40 * 40) { px(200, 100, 50) }, 40, 40, 10, 10)
+        assertEquals(100, out.size); assertTrue(out.all { it == px(200, 100, 50) })
+    }
+    @Test fun checkerAveragesToMid() {
+        val src = IntArray(16 * 16) { i -> if ((i % 16 + i / 16) % 2 == 0) px(0, 0, 0) else px(255, 255, 255) }
+        val out = com.wizlabs.photofit.engine.Resample.scale(src, 16, 16, 4, 4)
+        assertTrue(out.all { (it and 0xFF) in 100..155 })
+    }
+    @Test fun keepsHardEdgeSharp() {
+        // left half black, right half white; after 4x shrink the two columns beside the edge stay near 0 / 255
+        val src = IntArray(32 * 8) { i -> if (i % 32 < 16) px(0, 0, 0) else px(255, 255, 255) }
+        val out = com.wizlabs.photofit.engine.Resample.scale(src, 32, 8, 8, 2)
+        assertTrue((out[2] and 0xFF) < 40 && (out[5] and 0xFF) > 215)
+    }
+    @Test fun sameSizeIsCopy() { val s = IntArray(9) { px(it, it, it) }; assertTrue(s.contentEquals(com.wizlabs.photofit.engine.Resample.scale(s, 3, 3, 3, 3))) }
+    @Test fun unsharpFlatUnchangedAndEdgeBoosted() {
+        val flat = IntArray(25) { px(120, 120, 120) }
+        assertTrue(flat.contentEquals(com.wizlabs.photofit.engine.Resample.unsharp(flat, 5, 5, 0.5f)))
+        val edge = IntArray(25) { i -> if (i % 5 < 2) px(100, 100, 100) else px(160, 160, 160) }
+        val out = com.wizlabs.photofit.engine.Resample.unsharp(edge, 5, 5, 0.6f)
+        assertTrue((out[12] and 0xFF) > 160 && (out[11] and 0xFF) < 100)
+    }
+    @Test fun zeroAmountOff() { val e = IntArray(25) { px(it * 5, 0, 0) }; assertTrue(e.contentEquals(com.wizlabs.photofit.engine.Resample.unsharp(e, 5, 5, 0f))) }
+}

@@ -110,12 +110,12 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBac
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(6.dp))
             // show the small file big enough to judge (pixels are scaled up for display only)
-            Image(preview, null, contentScale = ContentScale.Fit, filterQuality = androidx.compose.ui.graphics.FilterQuality.Medium,
-                modifier = Modifier.fillMaxWidth(if (img.width < img.height) 0.5f else 0.85f)
+            Image(preview, null, contentScale = ContentScale.Fit, filterQuality = androidx.compose.ui.graphics.FilterQuality.High,
+                modifier = Modifier.fillMaxWidth(if (img.width < img.height) 0.36f else 0.7f)
                     .aspectRatio(img.width.toFloat() / img.height).enterRise(0).clip(RoundedCornerShape(10.dp)).border(1.dp, Wiz.Line, RoundedCornerShape(10.dp)))
             Spacer(Modifier.height(16.dp))
             WizCard(Modifier.fillMaxWidth().enterRise(1)) {
-                Column(Modifier.padding(18.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(Modifier.padding(14.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     KbGauge(o.bytes.size, part.kbMin, part.kbMax, o.ok)
                     Text("${TargetEncoder.kb(o.bytes.size)} KB", color = if (o.ok) Wiz.Text else Wiz.Bad, style = MaterialTheme.typography.displayLarge)
                     Text("Needed: ${SpecText.kb(part)}", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
@@ -167,7 +167,7 @@ private fun KbGauge(bytes: Int, kbMin: Int?, kbMax: Int?, ok: Boolean) {
     val v = (bytes / 1024f / span).coerceIn(0f, 1f)
     val a = remember { Animatable(0f) }
     LaunchedEffect(bytes) { a.animateTo(v, spring(dampingRatio = 0.6f, stiffness = 120f)) }
-    Canvas(Modifier.size(width = 200.dp, height = 104.dp)) {
+    Canvas(Modifier.size(width = 150.dp, height = 80.dp)) {
         val r = size.width * 0.42f; val c = Offset(size.width / 2, size.height * 0.95f)
         val tl = Offset(c.x - r, c.y - r); val sz = Size(r * 2, r * 2); val st = Stroke(12.dp.toPx(), cap = StrokeCap.Round)
         drawArc(Wiz.PanelHi, 180f, 180f, false, tl, sz, style = st)

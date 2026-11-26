@@ -1,13 +1,19 @@
-Photo Fit resizes your photo and signature to the exact size and KB that an online form asks for: SSC, UPSC, RRB railway, IBPS / SBI bank, NEET, JEE, CUET, GATE, state PSC, police and more. Pick your exam, pick a photo, and get a file that fits the limit, like 20–50 KB photo and 10–20 KB signature. Fully offline, no ads, no permissions.
+Wiz Photo Fit resizes your photo and signature to the exact size and KB that an online form asks for: SSC, UPSC, RRB railway, IBPS / SBI bank, NEET, JEE, CUET, GATE, state PSC, police and more. Pick your exam, pick a photo, and get a file that fits the limit, like 20–50 KB photo and 10–20 KB signature. Search your exam, crop with guides, and see a pass/fail check for size, KB and format before you save. Works offline with no internet permission and no permissions at all.
 
 ★ EXAM PHOTO & SIGNATURE RESIZER
 • 36 ready sizes for government jobs and entrance exams: SSC CGL / CHSL / MTS / GD, UPSC, RRB NTPC / Group D, IBPS PO / Clerk, SBI PO / Clerk, RBI, JEE Main, JEE Advanced, NEET UG, NEET PG, CUET UG / PG, GATE, CAT, CLAT, NIFT, NATA, ICAR, UGC NET, CSIR NET, CTET, BPSC, MPSC, UP Police, Agniveer, Navodaya JNVST, Sainik School and PAN card
 • Resize photo in KB: the file always lands inside the limit (20 KB, 50 KB, 100 KB, 200 KB …)
-• Signature resize: 10 KB to 20 KB, 140 × 60 px, with a cleaner that makes the paper white and the ink sharp
+• Signature resize: 10 KB to 20 KB, 140 × 60 px, with a cleaner that turns the paper white and the ink darker
 • Thumb impression, handwritten declaration and parent signature sizes for bank and NTA forms
 • Name and date on the photo when the form asks for it
 • Exact pixels, cm and DPI, JPG, PNG or PDF
 • Join photo and signature into one image
+
+★ SEARCH, CHECK, COMPARE
+• Search-first home: type SSC, NEET, passport or PAN and jump straight to the right size, with your last 5 forms one tap away
+• Compliance check on every result: dimensions, KB range, format, DPI, background colour and (for ID photos) face size, each marked pass or fix
+• Before and after slider to compare the original with the final file
+• Light and dark themes
 
 ★ MAKE YOUR OWN SIZE
 • Enter width and height in px, cm, mm or inch, the DPI and the min / max KB from any notification
@@ -15,7 +21,7 @@ Photo Fit resizes your photo and signature to the exact size and KB that an onli
 
 ★ PASSPORT SIZE PHOTO & ID PHOTO
 • Passport size photo for India passport, visa and OCI, plus USA 2×2 inch, UK, Schengen, Canada, Australia, UAE, China and stamp size
-• Face guide and white or light-blue background
+• Face guide, automatic face fit and white or light-blue background (the one-time face and background tools come from Google Play services)
 • Print sheet: many passport photos on 4×6 inch or A4 paper with cut lines, as JPG or true-size PDF
 
 ★ IMAGE COMPRESSOR IN KB
@@ -23,8 +29,8 @@ Photo Fit resizes your photo and signature to the exact size and KB that an onli
 • Reduce the longest side, convert to JPG, WEBP or PNG, save all or share all
 
 ★ PRIVATE AND LIGHT
-• No ads, no login, no internet permission: your photos never leave your phone
+• No login and no internet permission: your photos never leave your phone
 • Uses Android's own photo picker and camera, so the app needs no storage or camera permission
 • Small download and smooth on low-end phones
 
-Exam photo sizes change every year, so always check your latest official notification. Every size can be edited. Photo Fit is an independent tool by Wiz Labs and is not affiliated with any government body or exam authority.
+Exam photo sizes change every year, so always check your latest official notification. Every size can be edited. Wiz Photo Fit is an independent tool by Wiz Labs and is not affiliated with any government body or exam authority.

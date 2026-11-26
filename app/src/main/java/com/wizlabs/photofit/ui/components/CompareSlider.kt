@@ -38,7 +38,7 @@ fun CompareSlider(before: ImageBitmap, after: ImageBitmap, split: Float, onSplit
             .pointerInput(Unit) { detectHorizontalDragGestures { change, _ -> change.consume(); onSplit((change.position.x / size.width).coerceIn(0f, 1f)) } }
             .drawWithContent { drawContent() },
     ) {
-        Image(after, null, contentScale = ContentScale.FillBounds, modifier = Modifier.fillMaxSize())
+        Image(after, null, contentScale = ContentScale.FillBounds, filterQuality = androidx.compose.ui.graphics.FilterQuality.High, modifier = Modifier.fillMaxSize())
         Canvas(Modifier.fillMaxSize()) {
             val x = size.width * split
             clipRect(0f, 0f, x, size.height) {
@@ -47,7 +47,7 @@ fun CompareSlider(before: ImageBitmap, after: ImageBitmap, split: Float, onSplit
                 val cw = if (before.width.toFloat() / before.height > want) (before.height * want).toInt() else before.width
                 val ch = if (before.width.toFloat() / before.height > want) before.height else (before.width / want).toInt()
                 drawImage(before, srcOffset = androidx.compose.ui.unit.IntOffset((before.width - cw) / 2, (before.height - ch) / 2),
-                    srcSize = androidx.compose.ui.unit.IntSize(cw, ch), dstSize = androidx.compose.ui.unit.IntSize(size.width.toInt(), size.height.toInt()))
+                    srcSize = androidx.compose.ui.unit.IntSize(cw, ch), dstSize = androidx.compose.ui.unit.IntSize(size.width.toInt(), size.height.toInt()), filterQuality = androidx.compose.ui.graphics.FilterQuality.High)
             }
             drawLine(Wiz.Accent, Offset(x, 0f), Offset(x, size.height), 3.dp.toPx())
             drawCircle(Wiz.Accent, 14.dp.toPx(), Offset(x, size.height / 2))

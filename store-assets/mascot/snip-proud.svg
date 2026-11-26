@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
+  <title>Snip proud</title>
+  <rect x="33" y="90" width="13" height="6" rx="3" fill="#15151A"/><rect x="54" y="90" width="13" height="6" rx="3" fill="#15151A"/>
+  <path d="M74 72 C84 62 90 70 88 80 L94 79 C96 68 90 58 80 62 Z" fill="#FFC400"/>
+  <rect x="22" y="18" width="56" height="60" rx="10" fill="#15151A"/><rect x="27" y="23" width="46" height="50" rx="6" fill="#FFFFFF"/><rect x="30" y="26" width="40" height="44" rx="4" fill="#BAE6FD"/>
+  <circle cx="36" cy="55" r="3.4" fill="#FDA4AF" fill-opacity=".5"/><circle cx="64" cy="55" r="3.4" fill="#FDA4AF" fill-opacity=".5"/>
+  <path d="M37.5 48 Q41 42 44.5 48 M55.5 48 Q59 42 62.5 48" fill="none" stroke="#15151A" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M41 54 Q50 65 59 54" fill="none" stroke="#15151A" stroke-width="3.2" stroke-linecap="round"/>
+  <rect x="19" y="66" width="62" height="8" rx="4" fill="#FFC400"/>
+  <g stroke="#8F6A00" stroke-width="1.1"><path d="M25 66v5M31 66v3M37 66v3M43 66v5M49 66v3M55 66v3M61 66v5M67 66v3M73 66v3"/></g>
+  <path d="M71 16 L80 16 L80 25" fill="none" stroke="#15151A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" transform="rotate(-18 80 16)"/>
+  <path d="M29 84 L20 84 L20 75" fill="none" stroke="#15151A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
