@@ -16,8 +16,11 @@ object Work {
     var savedUri: Uri? = null
     /** Something the Result screen should tell the user (e.g. background not changed). */
     var notice: String? = null
+    /** Face box in source-bitmap pixels when FaceFinder ran, and the head/crop-height share at export (for the Face-size check). */
+    var face: com.wizlabs.photofit.engine.RectF4? = null
+    var headRatio: Float? = null
 
     val part: Part? get() = preset?.parts?.getOrNull(partIndex)
 
-    fun clearImages() { source?.recycle(); source = null; rendered?.recycle(); rendered = null; output = null; savedUri = null }
+    fun clearImages() { face = null; headRatio = null; source?.recycle(); source = null; rendered?.recycle(); rendered = null; output = null; savedUri = null }
 }

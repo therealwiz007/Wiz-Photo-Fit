@@ -68,7 +68,7 @@ fun ExamListScreen(repo: PresetRepo, open: (Screen) -> Unit, onBack: () -> Unit)
     var query by rememberSaveable { mutableStateOf("") }
     var group by rememberSaveable { mutableStateOf("all") }
     val list = remember(query, group, repo.mine) {
-        repo.search(query).filter { group == "all" || (group == "mine" && it.mine) || it.group == group }
+        rankedSearch(repo, query).filter { group == "all" || (group == "mine" && it.mine) || it.group == group }
     }
     Box(Modifier.fillMaxSize().background(Wiz.Bg)) {
         Column(Modifier.fillMaxSize()) {
@@ -86,10 +86,12 @@ fun ExamListScreen(repo: PresetRepo, open: (Screen) -> Unit, onBack: () -> Unit)
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 if (list.isEmpty()) item(key = "empty") {
-                    Column(Modifier.fillMaxWidth().padding(top = 40.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(Modifier.fillMaxWidth().padding(top = 32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        com.wizlabs.photofit.ui.mascot.Snip(com.wizlabs.photofit.engine.SnipExpression.SEARCHING, com.wizlabs.photofit.engine.SnipAction.LOOK_SIDE, 96.dp)
+                        Spacer(Modifier.height(8.dp))
                         Text("No exam found", color = Wiz.Text, style = MaterialTheme.typography.titleLarge)
                         Spacer(Modifier.height(6.dp))
-                        Text("Make your own size: enter the width, height and KB from your form.", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
+                        Text("Can't find it? Make a custom size: enter the width, height and KB from your form.", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
                         Spacer(Modifier.height(16.dp))
                         GhostButton("Make your own size", { open(Screen.Builder()) }, icon = Icons.Default.Add)
                     }
@@ -157,6 +159,13 @@ private fun PresetRow(p: Preset, groupLabel: String, onClick: () -> Unit) {
             }
         }
         Spacer(Modifier.width(8.dp))
-        Text(SpecText.kb(photo), color = Wiz.AccentInk, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(SpecText.kb(photo), color = Wiz.AccentInk, style = com.wizlabs.photofit.ui.components.MonoStyle, fontWeight = FontWeight.Medium)
     }
+}
+
+private fun rankedSearch(repo: PresetRepo, q: String): List<Preset> {
+    val all = repo.all()
+    val byId = all.associateBy { it.id }
+    val entries = all.map { p -> com.wizlabs.photofit.data.SearchEntry(p.id, p.name, repo.groups.firstOrNull { it.id == p.group }?.label ?: "") }
+    return com.wizlabs.photofit.data.SearchIndex.search(entries, q).mapNotNull { byId[it.id] }
 }

@@ -128,6 +128,7 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
             if (face != null) {
                 com.wizlabs.photofit.engine.ModelStatus.markReady()
                 val ratio = com.wizlabs.photofit.data.IdPresets.headRatio[Work.preset?.id] ?: 0.6f
+                Work.face = face
                 crop = CropMath.fitFace(face, b.width, b.height, photoAspect, headRatio = ratio)
                 faceLocked = true; haptics.tick()
             }
@@ -260,6 +261,7 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                     val r = CropMath.rect(cs, bb.width, bb.height, photoAspect)
                     val withStrip = nameDate && part.kind == PartKind.PHOTO
                     val photoH = if (withStrip) (target.h * (1 - NameDateStrip.BAND)).roundToInt() else target.h
+                    Work.headRatio = Work.face?.let { (it.height / r.height).coerceIn(0f, 1f) }
                     var cropped = Render.crop(bb, r, target.w, photoH)
                     next()
                     val bgColor = if (photoPart) com.wizlabs.photofit.engine.BackgroundSwap.colorFor(bg, part.bgColor) else null

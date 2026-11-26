@@ -72,6 +72,7 @@ fun ExamDetailScreen(repo: PresetRepo, presetId: String, open: (Screen) -> Unit,
     var target by rememberSaveable { mutableIntStateOf(0) }
     var camUri by rememberSaveable { mutableStateOf<String?>(null) }
     fun start(uri: Uri) {
+        com.wizlabs.photofit.data.Recents.push(ctx, p.id)
         Work.clearImages(); Work.preset = p; Work.partIndex = target; Work.sourceUri = uri
         open(Screen.Editor(p.id, target))
     }

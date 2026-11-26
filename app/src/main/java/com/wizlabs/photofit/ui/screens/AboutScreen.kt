@@ -20,17 +20,18 @@ import com.wizlabs.photofit.ui.components.Wiz
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun AboutScreen(onBack: () -> Unit) {
+fun AboutScreen(onBack: () -> Unit, onShowIntro: () -> Unit = {}) {
     val ctx = LocalContext.current
     val version = remember { runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "" }
     Column(Modifier.fillMaxSize().background(Wiz.Bg).navigationBarsPadding()) {
         TopBar("Wiz Photo Fit", "Version $version · Wiz Labs", onBack = onBack)
+        com.wizlabs.photofit.ui.components.GhostButton("Show the intro again", onShowIntro, Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
         TrustStrip(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
         // The bundled privacy policy (same file as the website copy). No network is used.
         AndroidView(
             factory = { c ->
                 WebView(c).apply {
-                    setBackgroundColor(0xFF0B0D10.toInt())
+                    setBackgroundColor(if (Wiz.dark) 0xFF0F0F12.toInt() else 0xFFFAFAF7.toInt())
                     settings.javaScriptEnabled = false
                     settings.allowFileAccess = false
                     settings.blockNetworkLoads = true

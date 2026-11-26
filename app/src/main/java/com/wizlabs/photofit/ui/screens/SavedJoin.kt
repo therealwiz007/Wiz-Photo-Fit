@@ -102,8 +102,8 @@ fun SavedScreen(onBack: () -> Unit) {
         val list = files
         if (list != null && list.isEmpty()) {
             Column(Modifier.fillMaxSize().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                GlyphSaved(Wiz.Muted, size = 56.dp); Spacer(Modifier.height(12.dp))
-                Text("Your photos will show here", color = Wiz.Muted, style = MaterialTheme.typography.titleMedium)
+                com.wizlabs.photofit.ui.mascot.Snip(com.wizlabs.photofit.engine.SnipExpression.SLEEPY, com.wizlabs.photofit.engine.SnipAction.NONE, 120.dp); Spacer(Modifier.height(12.dp))
+                Text(com.wizlabs.photofit.engine.SnipBrain.react(com.wizlabs.photofit.engine.SnipEvent.SavedEmpty).line, color = Wiz.Muted, style = MaterialTheme.typography.titleMedium)
             }
             return@Column
         }

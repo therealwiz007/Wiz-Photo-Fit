@@ -53,6 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.wizlabs.photofit.data.Exporter
 import com.wizlabs.photofit.data.Work
 import com.wizlabs.photofit.engine.Render
@@ -119,12 +120,6 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBac
                     Text("${TargetEncoder.kb(o.bytes.size)} KB", color = if (o.ok) Wiz.Text else Wiz.Bad, style = MaterialTheme.typography.displayLarge)
                     Text("Needed: ${SpecText.kb(part)}", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
                     Spacer(Modifier.height(10.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(if (o.ok) Icons.Default.CheckCircle else Icons.Default.Warning, null, tint = if (o.ok) Wiz.Good else Wiz.Bad)
-                        Spacer(Modifier.width(8.dp))
-                        Text(if (o.ok) "Fits the form" else (o.message ?: "Does not fit"), color = if (o.ok) Wiz.Good else Wiz.Bad, style = MaterialTheme.typography.titleMedium)
-                    }
-                    Spacer(Modifier.height(10.dp))
                     Text("${o.widthPx} × ${o.heightPx} px  ·  ${Units.fmt(Units.pxToCm(o.widthPx, o.dpi))} × ${Units.fmt(Units.pxToCm(o.heightPx, o.dpi))} cm @ ${o.dpi} dpi  ·  ${o.format.ext.uppercase()}",
                         color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
                     Work.notice?.let { Spacer(Modifier.height(6.dp)); Text(it, color = Wiz.Warn, style = MaterialTheme.typography.bodySmall) }
@@ -132,6 +127,14 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBac
                     if (saved) Text(if (Exporter.canAutoSave()) "Saved to ${if (o.format.ext == "pdf") "Download" else "Pictures"}/${Exporter.FOLDER}" else "Saved",
                         color = Wiz.Good, style = MaterialTheme.typography.bodySmall)
                 }
+            }
+            Spacer(Modifier.height(12.dp))
+            val checks = remember(o, part) { computeChecks(part, o, img) }
+            CheckCard(checks, o, Modifier.enterRise(2))
+            val original = Work.source
+            if (original != null) {
+                Spacer(Modifier.height(12.dp))
+                CompareCard(original, img)
             }
             Spacer(Modifier.height(12.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -173,5 +176,76 @@ private fun KbGauge(bytes: Int, kbMin: Int?, kbMax: Int?, ok: Boolean) {
         val ang = (180f + 180f * a.value) * (PI.toFloat() / 180f)
         drawLine(if (ok) Wiz.Text else Wiz.Bad, c, Offset(c.x + cos(ang) * r * 0.82f, c.y + sin(ang) * r * 0.82f), 4.dp.toPx(), StrokeCap.Round)
         drawCircle(Wiz.Accent, 7.dp.toPx(), c)
+    }
+}
+
+/** Measured from the real output, never guessed (engine/Compliance.kt does the comparing). */
+private fun computeChecks(part: com.wizlabs.photofit.data.Part, o: Render.Output, img: android.graphics.Bitmap): List<com.wizlabs.photofit.engine.Check> {
+    val t = part.size.targetPx()
+    val flexible = part.size.px == null && part.size.phys == null || part.size.pxMin != null
+    val rule = when (part.background) { com.wizlabs.photofit.data.Bg.WHITE -> com.wizlabs.photofit.engine.BgRule.WHITE; com.wizlabs.photofit.data.Bg.LIGHT -> com.wizlabs.photofit.engine.BgRule.LIGHT; else -> null }
+    val spec = com.wizlabs.photofit.engine.ComplianceSpec(
+        if (flexible) o.widthPx else t.w, if (flexible) o.heightPx else t.h, part.kbMin, part.kbMax, part.format.ext,
+        dpi = if (part.size.phys != null) part.size.dpi else null,
+        background = if (part.kind == com.wizlabs.photofit.data.PartKind.PHOTO) rule else null,
+        headRatio = if (Work.headRatio != null) com.wizlabs.photofit.data.IdPresets.headRatio[Work.preset?.id] else null,
+    )
+    val corner = runCatching {
+        val w = img.width; val h = img.height
+        val px = intArrayOf(img.getPixel(1, 1), img.getPixel(w - 2, 1), img.getPixel(1, h - 2), img.getPixel(w - 2, h - 2))
+        fun avg(sh: Int) = px.sumOf { it shr sh and 0xFF } / 4
+        (avg(16) shl 16) or (avg(8) shl 8) or avg(0)
+    }.getOrNull()
+    return com.wizlabs.photofit.engine.Compliance.evaluate(spec, com.wizlabs.photofit.engine.Measured(o.widthPx, o.heightPx, o.bytes.size, o.format.ext, o.dpi, corner, Work.headRatio))
+}
+
+@Composable
+private fun CheckCard(checks: List<com.wizlabs.photofit.engine.Check>, o: Render.Output, modifier: Modifier = Modifier) {
+    val failed = com.wizlabs.photofit.engine.Compliance.failed(checks)
+    val mood = if (failed == 0) com.wizlabs.photofit.engine.SnipBrain.react(com.wizlabs.photofit.engine.SnipEvent.AllChecksPass(o.widthPx, o.heightPx, o.bytes.size / 1000))
+        else com.wizlabs.photofit.engine.SnipBrain.react(com.wizlabs.photofit.engine.SnipEvent.ChecksFail(failed))
+    WizCard(modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                com.wizlabs.photofit.ui.mascot.Snip(mood.expression, mood.action, 56.dp)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(if (failed == 0) "All checks pass" else "Needs a fix", color = if (failed == 0) Wiz.Good else Wiz.Bad, style = MaterialTheme.typography.titleMedium)
+                    Text(mood.line, color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+            for (c in checks) Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.Top) {
+                Icon(if (c.pass) Icons.Default.CheckCircle else Icons.Default.Warning, if (c.pass) "Pass" else "Fail", tint = if (c.pass) Wiz.Good else Wiz.Bad, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(10.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(c.name, color = Wiz.Text, style = MaterialTheme.typography.labelLarge)
+                    Text(c.detail, color = Wiz.Muted, style = com.wizlabs.photofit.ui.components.MonoStyle.copy(fontSize = 12.sp, lineHeight = 16.sp))
+                    if (!c.pass && c.fix != null) Text(c.fix, color = Wiz.Bad, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
+    }
+}
+
+/** Drag the divider, or use the two buttons (TalkBack-friendly alternative). */
+@Composable
+private fun CompareCard(original: android.graphics.Bitmap, final: android.graphics.Bitmap) {
+    val before = remember(original) { original.asImageBitmap() }
+    val after = remember(final) { final.asImageBitmap() }
+    var split by remember { mutableStateOf(0.5f) }
+    WizCard(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(14.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("Before and after", color = Wiz.Text, style = MaterialTheme.typography.labelLarge, modifier = Modifier.align(Alignment.Start))
+            Spacer(Modifier.height(8.dp))
+            Box(Modifier.fillMaxWidth(if (final.width < final.height) 0.55f else 1f).clip(RoundedCornerShape(10.dp))) {
+                com.wizlabs.photofit.ui.components.CompareSlider(before, after, split, { split = it })
+            }
+            Spacer(Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                GhostButton("Original", { split = 1f })
+                GhostButton("Final", { split = 0f })
+            }
+        }
     }
 }

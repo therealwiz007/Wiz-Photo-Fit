@@ -19,7 +19,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.wizlabs.photofit.ui.components.Wiz
@@ -63,11 +66,17 @@ private fun App(link: String?) {
     LaunchedEffect(link) { if (link != null && link.startsWith(com.wizlabs.photofit.data.ShareCode.LINK)) nav.push(Screen.Import(link)) }
     val ctx = androidx.compose.ui.platform.LocalContext.current
     val repo = remember { com.wizlabs.photofit.data.PresetRepo(ctx.applicationContext) }
+    var intro by remember { mutableStateOf(!com.wizlabs.photofit.data.Recents.seenIntro(ctx)) }
     val peek = LocalBackPeek.current
     // Once the back transition has played, drop the peek so the next visit starts full size.
     LaunchedEffect(nav.top) { kotlinx.coroutines.delay(650); if (peek != null && !peek.dragging) peek.reset() }
     WizBackHandler(nav.top.route, enabled = nav.canPop) { nav.pop() }
 
+    if (intro) {
+        WizBackHandler("intro", enabled = true) { com.wizlabs.photofit.data.Recents.setSeenIntro(ctx); intro = false }
+        com.wizlabs.photofit.ui.screens.IntroGuide { com.wizlabs.photofit.data.Recents.setSeenIntro(ctx); intro = false }
+        return
+    }
     AnimatedContent(
         targetState = nav.top,
         transitionSpec = {
@@ -81,8 +90,8 @@ private fun App(link: String?) {
     ) { s ->
         Box(Modifier.fillMaxSize().backPeek(s.route)) {
             when (s) {
-                Screen.Home -> HomeScreen(open = nav::push)
-                Screen.About -> AboutScreen(onBack = nav::pop)
+                Screen.Home -> HomeScreen(repo, open = nav::push)
+                Screen.About -> AboutScreen(onBack = nav::pop, onShowIntro = { nav.pop(); intro = true })
                 Screen.ExamList -> com.wizlabs.photofit.ui.screens.ExamListScreen(repo, nav::push, nav::pop)
                 is Screen.ExamDetail -> com.wizlabs.photofit.ui.screens.ExamDetailScreen(repo, s.presetId, nav::push, nav::pop)
                 is Screen.Editor -> com.wizlabs.photofit.ui.screens.EditorScreen(onDone = { nav.replace(Screen.Result) }, onBack = nav::pop)

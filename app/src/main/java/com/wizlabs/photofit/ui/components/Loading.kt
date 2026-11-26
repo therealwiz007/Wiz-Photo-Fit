@@ -163,7 +163,13 @@ fun ModelReadyCard(state: ModelStatus.State, onRetry: () -> Unit, modifier: Modi
             if (state !is ModelStatus.State.Ready && state !is ModelStatus.State.Failed && prog == null) Box(Modifier.matchParentSize().shimmer())
             Column(Modifier.padding(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(10.dp).clip(CircleShape).background(col as Color))
+                    val mood = when (state) {
+                        is ModelStatus.State.Downloading -> com.wizlabs.photofit.engine.SnipBrain.react(com.wizlabs.photofit.engine.SnipEvent.ModelDownloading(((state.progress ?: 0f) * 100).toInt()))
+                        is ModelStatus.State.Failed -> com.wizlabs.photofit.engine.SnipBrain.react(com.wizlabs.photofit.engine.SnipEvent.ModelUnavailable)
+                        else -> null
+                    }
+                    if (mood != null) com.wizlabs.photofit.ui.mascot.Snip(mood.expression, mood.action, 48.dp)
+                    else Box(Modifier.size(10.dp).clip(CircleShape).background(col as Color))
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
                         Text(title as String, color = Wiz.Text, style = MaterialTheme.typography.titleMedium)
