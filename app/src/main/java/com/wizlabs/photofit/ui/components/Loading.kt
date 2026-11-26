@@ -70,11 +70,11 @@ fun ProcessingOverlay(visible: Boolean, title: String, steps: List<Step>, curren
             .clickable(remember { MutableInteractionSource() }, null) {}, contentAlignment = Alignment.Center) {
             Column(Modifier.fillMaxWidth().padding(28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(Modifier.fillMaxWidth(if (aspect < 1f) 0.5f else 0.75f).aspectRatio(aspect).clip(RoundedCornerShape(14.dp))
-                    .background(Wiz.Panel).border(1.dp, Wiz.Accent.copy(alpha = 0.4f), RoundedCornerShape(14.dp))
+                    .background(Wiz.Panel).border(1.dp, Wiz.AccentInk.copy(alpha = 0.4f), RoundedCornerShape(14.dp))
                     .drawWithCache {
                         val beamH = size.height * 0.22f
-                        val beam = Brush.verticalGradient(listOf(Color.Transparent, Wiz.Accent.copy(alpha = 0.45f), Color.Transparent), 0f, beamH)
-                        val line = Wiz.Accent
+                        val beam = Brush.verticalGradient(listOf(Color.Transparent, Wiz.AccentInk.copy(alpha = 0.45f), Color.Transparent), 0f, beamH)
+                        val line = Wiz.AccentInk
                         onDrawWithContent {
                             drawContent()
                             // beam sweeps down and back every 1.6 s
@@ -88,7 +88,7 @@ fun ProcessingOverlay(visible: Boolean, title: String, steps: List<Step>, curren
                 }
                 Spacer(Modifier.height(22.dp))
                 Text(title, color = Wiz.Text, style = MaterialTheme.typography.headlineMedium)
-                live?.let { Text(it, color = Wiz.Accent, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) }
+                live?.let { Text(it, color = Wiz.AccentInk, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) }
                 Spacer(Modifier.height(16.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     steps.forEachIndexed { i, s -> StepRow(s, done = i < current, active = i == current, clockValue = { clock.value }) }
@@ -111,7 +111,7 @@ private fun StepRow(s: Step, done: Boolean, active: Boolean, clockValue: () -> F
             // ring (pulses while active), check pops in when done
             Box(Modifier.size(22.dp).graphicsLayer {
                 if (active) { val k = 1f + 0.12f * kotlin.math.sin(clockValue() * 6f); scaleX = k; scaleY = k }
-            }.clip(CircleShape).border(2.dp, if (done) Wiz.Good else if (active) Wiz.Accent else Wiz.Line, CircleShape))
+            }.clip(CircleShape).border(2.dp, if (done) Wiz.Good else if (active) Wiz.AccentInk else Wiz.Line, CircleShape))
             androidx.compose.animation.AnimatedVisibility(done, enter = scaleIn(spring(0.45f, 600f)) + fadeIn()) {
                 Box(Modifier.size(22.dp).clip(CircleShape).background(if (s.failed) Wiz.Warn else Wiz.Good), contentAlignment = Alignment.Center) {
                     if (s.failed) Text("!", color = Wiz.Bg, fontWeight = FontWeight.Black)
@@ -149,11 +149,11 @@ fun Modifier.shimmer(): Modifier = composed {
 fun ModelReadyCard(state: ModelStatus.State, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     val (title, sub, col, prog) = when (state) {
         ModelStatus.State.Ready -> listOf("Face + background tools ready", "Works offline from now on", Wiz.Good, 1f)
-        ModelStatus.State.Unknown, ModelStatus.State.Checking -> listOf("Checking face + background tools…", "One moment", Wiz.Accent, null)
+        ModelStatus.State.Unknown, ModelStatus.State.Checking -> listOf("Checking face + background tools…", "One moment", Wiz.AccentInk, null)
         is ModelStatus.State.Downloading -> listOf("Getting face + background tools",
             if (state.total > 0) "Google Play services · ${state.bytes / 1024 / 1024}.${(state.bytes / 1024 % 1024) / 103} of ${state.total / 1024 / 1024} MB · one time only"
-            else "Google Play services is downloading them · one time only", Wiz.Accent, state.progress)
-        is ModelStatus.State.Installing -> listOf("Almost ready", state.note, Wiz.Accent, 0.98f)
+            else "Google Play services is downloading them · one time only", Wiz.AccentInk, state.progress)
+        is ModelStatus.State.Installing -> listOf("Almost ready", state.note, Wiz.AccentInk, 0.98f)
         is ModelStatus.State.Failed -> listOf("Face + background tools not ready", state.reason, Wiz.Warn, null)
     }
     val target = (prog as Float?) ?: 0f
@@ -169,8 +169,8 @@ fun ModelReadyCard(state: ModelStatus.State, onRetry: () -> Unit, modifier: Modi
                         Text(title as String, color = Wiz.Text, style = MaterialTheme.typography.titleMedium)
                         Text(sub as String, color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
                     }
-                    if (state is ModelStatus.State.Failed) Text("Retry", color = Wiz.Accent, style = MaterialTheme.typography.labelLarge, modifier = Modifier.clickable(onClick = onRetry).padding(8.dp))
-                    if (prog != null && state !is ModelStatus.State.Ready) Text("${(p * 100).toInt()}%", color = Wiz.Accent, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    if (state is ModelStatus.State.Failed) Text("Retry", color = Wiz.AccentInk, style = MaterialTheme.typography.labelLarge, modifier = Modifier.clickable(onClick = onRetry).padding(8.dp))
+                    if (prog != null && state !is ModelStatus.State.Ready) Text("${(p * 100).toInt()}%", color = Wiz.AccentInk, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 }
                 if (state !is ModelStatus.State.Ready && state !is ModelStatus.State.Failed) {
                     Spacer(Modifier.height(10.dp))

@@ -93,12 +93,12 @@ fun GhostButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier
     val src = remember { MutableInteractionSource() }
     Row(
         modifier.heightIn(min = 52.dp).pressScale(src, 0.96f).clip(RoundedCornerShape(16.dp))
-            .border(1.dp, Wiz.Accent.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+            .border(1.dp, Wiz.AccentInk.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
             .clickable(interactionSource = src, indication = null, onClick = onClick).padding(horizontal = 18.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
     ) {
-        if (icon != null) { Icon(icon, null, tint = Wiz.Accent, modifier = Modifier.size(20.dp)); Spacer(Modifier.width(8.dp)) }
-        Text(text, color = Wiz.Accent, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+        if (icon != null) { Icon(icon, null, tint = Wiz.AccentInk, modifier = Modifier.size(20.dp)); Spacer(Modifier.width(8.dp)) }
+        Text(text, color = Wiz.AccentInk, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
     }
 }
 
@@ -112,7 +112,7 @@ fun ToolTile(title: String, subtitle: String, icon: @Composable () -> Unit, onCl
             .clickable(interactionSource = src, indication = null, onClick = onClick).padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(60.dp).clip(RoundedCornerShape(18.dp)).background(Wiz.Accent.copy(alpha = 0.14f)), contentAlignment = Alignment.Center) { icon() }
+        Box(Modifier.size(60.dp).clip(RoundedCornerShape(18.dp)).background(Wiz.Accent.copy(alpha = 0.28f)), contentAlignment = Alignment.Center) { icon() }
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.titleLarge, color = Wiz.Text)
@@ -141,7 +141,7 @@ fun MiniTile(label: String, icon: @Composable () -> Unit, onClick: () -> Unit, m
 
 /** Rounded pill label. */
 @Composable
-fun Pill(text: String, color: Color = Wiz.Accent, modifier: Modifier = Modifier, icon: (@Composable () -> Unit)? = null) {
+fun Pill(text: String, color: Color = Wiz.AccentInk, modifier: Modifier = Modifier, icon: (@Composable () -> Unit)? = null) {
     Row(
         modifier.clip(RoundedCornerShape(50)).background(color.copy(alpha = 0.14f)).border(1.dp, color.copy(alpha = 0.35f), RoundedCornerShape(50))
             .padding(horizontal = 10.dp, vertical = 5.dp),

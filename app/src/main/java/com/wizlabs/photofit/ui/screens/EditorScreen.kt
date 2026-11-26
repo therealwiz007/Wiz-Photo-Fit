@@ -317,7 +317,7 @@ fun Field(label: String, value: String, modifier: Modifier = Modifier, keyboard:
         Box(Modifier.fillMaxWidth().heightIn(min = 50.dp).clip(RoundedCornerShape(14.dp)).background(Wiz.Panel)
             .border(1.dp, Wiz.Line, RoundedCornerShape(14.dp)).padding(horizontal = 14.dp), contentAlignment = Alignment.CenterStart) {
             BasicTextField(value, onChange, singleLine = true, textStyle = TextStyle(color = Wiz.Text, fontSize = 17.sp),
-                cursorBrush = SolidColor(Wiz.Accent), keyboardOptions = keyboard, modifier = Modifier.fillMaxWidth())
+                cursorBrush = SolidColor(Wiz.Text), keyboardOptions = keyboard, modifier = Modifier.fillMaxWidth())
         }
     }
 }

@@ -53,7 +53,7 @@ fun HeroArt(modifier: Modifier = Modifier) {
             val l = px - pw * 0.04f + inset; val r = px + pw * 1.04f - inset
             val tp = py - ph * 0.04f + inset; val b = py + ph * 1.04f - inset
             val arm = pw * 0.22f
-            val col = Wiz.Accent
+            val col = Wiz.AccentInk
             drawLine(col, Offset(l, tp), Offset(l + arm, tp), bracket.width, StrokeCap.Round); drawLine(col, Offset(l, tp), Offset(l, tp + arm), bracket.width, StrokeCap.Round)
             drawLine(col, Offset(r, tp), Offset(r - arm, tp), bracket.width, StrokeCap.Round); drawLine(col, Offset(r, tp), Offset(r, tp + arm), bracket.width, StrokeCap.Round)
             drawLine(col, Offset(l, b), Offset(l + arm, b), bracket.width, StrokeCap.Round); drawLine(col, Offset(l, b), Offset(l, b - arm), bracket.width, StrokeCap.Round)
@@ -65,7 +65,7 @@ fun HeroArt(modifier: Modifier = Modifier) {
             val ang = (180f + 20f + 70f * p) * (PI.toFloat() / 180f)
             val tip = Offset(gc.x + cos(ang) * gr * 0.86f, gc.y + sin(ang) * gr * 0.86f)
             drawLine(Wiz.Text, gc, tip, w * 0.018f, StrokeCap.Round)
-            drawCircle(Wiz.Accent, w * 0.026f, gc)
+            drawCircle(Wiz.AccentInk, w * 0.026f, gc)
             // "KB" tick lights up when the needle sits in the band
             val lit = (p - 0.85f).coerceIn(0f, 0.15f) / 0.15f
             drawRoundRect(Wiz.Good.copy(alpha = 0.2f + 0.8f * lit), Offset(gc.x - gr * 0.45f, gc.y + gr * 0.22f), Size(gr * 0.9f, gr * 0.34f),

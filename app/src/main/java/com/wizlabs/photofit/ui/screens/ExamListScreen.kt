@@ -112,12 +112,12 @@ fun SearchBox(value: String, onChange: (String) -> Unit, modifier: Modifier = Mo
             .border(1.dp, Wiz.Line, RoundedCornerShape(16.dp)).padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Default.Search, null, tint = Wiz.Accent)
+        Icon(Icons.Default.Search, null, tint = Wiz.AccentInk)
         Spacer(Modifier.width(10.dp))
         Box(Modifier.weight(1f)) {
             if (value.isEmpty()) Text(hint, color = Wiz.Muted, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
             BasicTextField(value, onChange, singleLine = true, textStyle = TextStyle(color = Wiz.Text, fontSize = 16.sp),
-                cursorBrush = SolidColor(Wiz.Accent), keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), modifier = Modifier.fillMaxWidth())
+                cursorBrush = SolidColor(Wiz.Text), keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search), modifier = Modifier.fillMaxWidth())
         }
         if (value.isNotEmpty()) Icon(Icons.Default.Close, "Clear", tint = Wiz.Muted, modifier = Modifier.size(22.dp).clickable { onChange("") })
     }
@@ -141,7 +141,7 @@ private fun PresetRow(p: Preset, groupLabel: String, onClick: () -> Unit) {
     val photo = p.parts.first()
     Row(
         Modifier.fillMaxWidth().heightIn(min = 76.dp).pressScale(src, 0.97f).clip(RoundedCornerShape(18.dp)).background(Wiz.Panel)
-            .border(1.dp, if (p.mine) Wiz.Accent.copy(alpha = 0.4f) else Wiz.Line, RoundedCornerShape(18.dp))
+            .border(1.dp, if (p.mine) Wiz.AccentInk.copy(alpha = 0.4f) else Wiz.Line, RoundedCornerShape(18.dp))
             .clickable(interactionSource = src, indication = null, onClick = onClick).padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -157,6 +157,6 @@ private fun PresetRow(p: Preset, groupLabel: String, onClick: () -> Unit) {
             }
         }
         Spacer(Modifier.width(8.dp))
-        Text(SpecText.kb(photo), color = Wiz.Accent, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(SpecText.kb(photo), color = Wiz.AccentInk, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
     }
 }

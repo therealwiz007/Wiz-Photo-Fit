@@ -88,7 +88,7 @@ fun CompressScreen(onBack: () -> Unit) {
         TopBar("Compress", if (items.isEmpty()) "Many photos to a target size" else "${items.size} photos", onBack = { job?.cancel(); onBack() })
         if (items.isEmpty()) {
             Column(Modifier.weight(1f).fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                GlyphCompress(Wiz.Accent, size = 64.dp)
+                GlyphCompress(Wiz.AccentInk, size = 64.dp)
                 Spacer(Modifier.height(16.dp))
                 Text("Make photos smaller", color = Wiz.Text, style = MaterialTheme.typography.headlineMedium)
                 Text("Pick up to 100 photos. Everything stays on your phone.", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
@@ -117,7 +117,7 @@ fun CompressScreen(onBack: () -> Unit) {
             Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("Compressing $finished of ${items.size}", color = Wiz.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                    Text("${(frac * 100).toInt()}%", color = Wiz.Accent, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("${(frac * 100).toInt()}%", color = Wiz.AccentInk, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 }
                 Spacer(Modifier.height(8.dp))
                 Box(Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)).background(Wiz.PanelHi)) {
@@ -167,13 +167,13 @@ private fun BatchRow(i: Int, it: BatchCompressor.Item) {
     WizCard(Modifier.fillMaxWidth(), corner = 14.dp) {
         Box {
             // progress bar as a scaleX transform (no layout animation)
-            Box(Modifier.matchParentSize().graphicsLayer { scaleX = progress; transformOrigin = TransformOrigin(0f, 0.5f) }.background(Wiz.Accent.copy(alpha = 0.08f)))
+            Box(Modifier.matchParentSize().graphicsLayer { scaleX = progress; transformOrigin = TransformOrigin(0f, 0.5f) }.background(Wiz.AccentInk.copy(alpha = 0.08f)))
             if (it is BatchCompressor.Item.Working) Box(Modifier.matchParentSize().then(with(com.wizlabs.photofit.ui.components.Loading) { Modifier.shim() }))
             Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("Photo ${i + 1}", color = Wiz.Text, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 when (it) {
                     is BatchCompressor.Item.Queued -> Text("Waiting", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
-                    is BatchCompressor.Item.Working -> Text("Squeezing…", color = Wiz.Accent, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                    is BatchCompressor.Item.Working -> Text("Squeezing…", color = Wiz.AccentInk, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                     is BatchCompressor.Item.Failed -> Text(it.reason, color = Wiz.Bad, style = MaterialTheme.typography.bodyMedium)
                     is BatchCompressor.Item.Done -> Text("${TargetEncoder.kb(it.beforeBytes.toInt())} → ${TargetEncoder.kb(it.bytes.size)} KB  ·  ${it.w}×${it.h}",
                         color = if (it.ok) Wiz.Good else Wiz.Warn, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)

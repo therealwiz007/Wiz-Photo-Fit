@@ -119,7 +119,7 @@ fun SavedScreen(onBack: () -> Unit) {
                         .then(if (thumb == null) with(com.wizlabs.photofit.ui.components.Loading) { Modifier.shim() } else Modifier), contentAlignment = Alignment.Center) {
                         thumb?.let { Image(it, null, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize()) }
                     }
-                    Text("${TargetEncoder.kb(f.bytes.toInt())} KB", color = Wiz.Accent, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 4.dp))
+                    Text("${TargetEncoder.kb(f.bytes.toInt())} KB", color = Wiz.AccentInk, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 4.dp))
                 }
             }
         }

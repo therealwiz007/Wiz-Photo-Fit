@@ -125,7 +125,7 @@ fun PresetBuilderScreen(repo: PresetRepo, editId: String?, copyFrom: String?, on
     if (confirm) AlertDialog(onDismissRequest = { confirm = false }, containerColor = Wiz.Panel,
         title = { Text("Discard this size?", color = Wiz.Text) },
         confirmButton = { TextButton({ confirm = false; onBack() }) { Text("Discard", color = Wiz.Bad) } },
-        dismissButton = { TextButton({ confirm = false }) { Text("Keep editing", color = Wiz.Accent) } })
+        dismissButton = { TextButton({ confirm = false }) { Text("Keep editing", color = Wiz.AccentInk) } })
 
     Column(Modifier.fillMaxSize().background(Wiz.Bg).navigationBarsPadding().imePadding()) {
         TopBar(if (editId != null) "Edit size" else "Make your own size", "Copy the numbers from your form", onBack = { confirm = true })
@@ -182,7 +182,7 @@ private fun PartEditor(f: PartForm, canDelete: Boolean, onDelete: () -> Unit) {
     WizCard(Modifier.fillMaxWidth().graphicsLayer { translationX = dx.value * 10.dp.toPx() }) {
         Column(Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(f.kind.label.uppercase(), color = Wiz.Accent, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
+                Text(f.kind.label.uppercase(), color = Wiz.AccentInk, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Black, modifier = Modifier.weight(1f))
                 if (canDelete) RoundIconButton(Icons.Default.Delete, "Remove", onDelete, tint = Wiz.Muted, size = 40.dp)
             }
             if (f.kind == PartKind.EXTRA) { Field("Label", f.label) { f.label = it.take(40) }; Spacer(Modifier.height(8.dp)) }

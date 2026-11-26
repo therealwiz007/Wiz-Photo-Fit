@@ -142,10 +142,10 @@ private fun PartCard(part: Part, modifier: Modifier, onPick: () -> Unit, onCamer
     WizCard(modifier.fillMaxWidth().pressScale(src, 0.97f).clickable(interactionSource = src, indication = null, onClick = onPick)) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (part.kind == PartKind.SIGNATURE || part.kind == PartKind.PARENT_SIGNATURE || part.kind == PartKind.DECLARATION) GlyphSign(Wiz.Accent) else GlyphExam(Wiz.Accent, size = 26.dp)
+                if (part.kind == PartKind.SIGNATURE || part.kind == PartKind.PARENT_SIGNATURE || part.kind == PartKind.DECLARATION) GlyphSign(Wiz.AccentInk) else GlyphExam(Wiz.AccentInk, size = 26.dp)
                 Spacer(Modifier.width(12.dp))
                 Text(part.label, color = Wiz.Text, style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-                Text(SpecText.kb(part), color = Wiz.Accent, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(SpecText.kb(part), color = Wiz.AccentInk, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(6.dp))
             Text(SpecText.line(part), color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
@@ -161,7 +161,7 @@ private fun PartCard(part: Part, modifier: Modifier, onPick: () -> Unit, onCamer
             }
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Pill("Pick from gallery", Wiz.Accent)
+                Pill("Pick from gallery", Wiz.AccentInk)
                 Text("or", color = Wiz.Muted, style = MaterialTheme.typography.bodySmall)
                 Row(Modifier.heightIn(min = 32.dp).clip(RoundedCornerShape(50)).border(1.dp, Wiz.Line, RoundedCornerShape(50))
                     .clickable(onClick = onCamera).padding(horizontal = 12.dp, vertical = 6.dp)) {

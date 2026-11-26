@@ -50,7 +50,7 @@ fun HomeScreen(open: (Screen) -> Unit) {
         WizCard(Modifier.fillMaxWidth().enterRise(0), corner = 28.dp) {
             Row(Modifier.padding(start = 20.dp, end = 12.dp, top = 18.dp, bottom = 18.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("WIZ LABS", color = Wiz.Accent, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Black)
+                    Text("WIZ LABS", color = Wiz.AccentInk, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Black)
                     Text("Photo Fit", color = Wiz.Text, style = MaterialTheme.typography.headlineMedium)
                     Spacer(Modifier.height(4.dp))
                     Text("Exact size, exact KB.\nFor exam forms, ID and passport.", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
@@ -66,15 +66,15 @@ fun HomeScreen(open: (Screen) -> Unit) {
         Spacer(Modifier.height(14.dp))
         SectionLabel("Tools")
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            ToolTile("Exam Photo", "Photo + signature in exact KB", { GlyphExam(Wiz.Accent) }, { open(Screen.ExamList) }, Modifier.enterRise(2))
-            ToolTile("ID / Passport", "Passport, visa and PAN photos + print sheet", { GlyphPassport(Wiz.Accent) }, { open(Screen.IdList) }, Modifier.enterRise(3))
-            ToolTile("Compress", "Many photos to a target KB at once", { GlyphCompress(Wiz.Accent) }, { open(Screen.Compress) }, Modifier.enterRise(4))
+            ToolTile("Exam Photo", "Photo + signature in exact KB", { GlyphExam(Wiz.AccentInk) }, { open(Screen.ExamList) }, Modifier.enterRise(2))
+            ToolTile("ID / Passport", "Passport, visa and PAN photos + print sheet", { GlyphPassport(Wiz.AccentInk) }, { open(Screen.IdList) }, Modifier.enterRise(3))
+            ToolTile("Compress", "Many photos to a target KB at once", { GlyphCompress(Wiz.AccentInk) }, { open(Screen.Compress) }, Modifier.enterRise(4))
         }
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth().enterRise(5), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MiniTile("Signature", { GlyphSign(Wiz.Accent) }, { open(Screen.Signature) }, Modifier.weight(1f))
-            MiniTile("Join", { GlyphJoin(Wiz.Accent) }, { open(Screen.Joiner) }, Modifier.weight(1f))
-            MiniTile("Saved", { GlyphSaved(Wiz.Accent) }, { open(Screen.Saved) }, Modifier.weight(1f))
+            MiniTile("Signature", { GlyphSign(Wiz.AccentInk) }, { open(Screen.Signature) }, Modifier.weight(1f))
+            MiniTile("Join", { GlyphJoin(Wiz.AccentInk) }, { open(Screen.Joiner) }, Modifier.weight(1f))
+            MiniTile("Saved", { GlyphSaved(Wiz.AccentInk) }, { open(Screen.Saved) }, Modifier.weight(1f))
         }
         Spacer(Modifier.height(24.dp))
     }

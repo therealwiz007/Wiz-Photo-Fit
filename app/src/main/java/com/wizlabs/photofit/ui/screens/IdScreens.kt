@@ -79,7 +79,7 @@ fun IdListScreen(open: (Screen) -> Unit, onBack: () -> Unit) {
                 Row(Modifier.fillMaxWidth().heightIn(min = 72.dp).pressScale(src, 0.97f).clip(RoundedCornerShape(18.dp)).background(Wiz.Panel)
                     .clickable(interactionSource = src, indication = null) { open(Screen.ExamDetail(p.id)) }.padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically) {
-                    GlyphPassport(Wiz.Accent)
+                    GlyphPassport(Wiz.AccentInk)
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
                         Text(p.name, color = Wiz.Text, style = MaterialTheme.typography.titleMedium)
