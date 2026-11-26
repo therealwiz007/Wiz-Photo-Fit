@@ -72,3 +72,13 @@ Date: 2026-11-26. Branch merged to main (fast-forward) at e76388a.
 - CI AAB: built, downloaded, signed by Wiz Labs.
 - Play draft 2 (1.1.0): AAB and notes staged, not submitted.
 - Waiting on owner: Data safety answers, store screenshots upload, ads-ready decision, review submit yes, production (no).
+
+## Store graphics replaced (2026-11-26) — BLOCKED, nothing changed on Play
+
+- Asset check: icon-512.png 512x512, feature-graphic-1024x500.png 1024x500, screenshots/1-result..8-dark.png all 1080x1920. OK.
+- Play Console app: "Photo Fit: Exam Photo & Sign" (id 4976075306683317179, developer 5669646636695105274, Wiz Labs). No sign-in prompt seen.
+- Default store listing (en-US) opened. Current graphics: icon, feature graphic, 8 phone screenshots (old look). Tablet/foldable slots present, not touched.
+- Removed the 8 old phone screenshots in the page, then could not upload: "Add assets" opens a native file picker that Claude in Chrome tools cannot reach (no file input in DOM). Computer-use cannot read Chrome (browser tier is read-only), would need full screen control.
+- Unsaved removals discarded. Listing back to old graphics (8/8 phone shots). Not saved, not sent for review, public listing unchanged.
+- Not done: icon, feature graphic, screenshot upload, translations check, review submit, public verification.
+- Next: run upload with full screen control or manual upload in Play Console using the files above (order 1-result to 8-dark).
