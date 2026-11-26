@@ -31,6 +31,6 @@ Wiz Photo Fit resizes your photo and signature to the exact size and KB that an 
 ★ PRIVATE AND LIGHT
 • No login and no internet permission: your photos never leave your phone
 • Uses Android's own photo picker and camera, so the app needs no storage or camera permission
-• Small download and smooth on low-end phones
+• Small download
 
 Exam photo sizes change every year, so always check your latest official notification. Every size can be edited. Wiz Photo Fit is an independent tool by Wiz Labs and is not affiliated with any government body or exam authority.
