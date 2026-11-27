@@ -1,0 +1,1 @@
+Ad-ready foundation: the app now has placeholder slots for future ads, but shows no ads in this version and contains no ad SDK. Launcher name is now Photo Fit. New app icon and store graphics. Android 15 edge-to-edge screen fit. Removed outdated offline and permission wording.

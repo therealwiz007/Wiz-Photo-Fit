@@ -96,8 +96,15 @@ fun ExamListScreen(repo: PresetRepo, open: (Screen) -> Unit, onBack: () -> Unit)
                         GhostButton("Make your own size", { open(Screen.Builder()) }, icon = Icons.Default.Add)
                     }
                 }
-                items(list, key = { it.id }, contentType = { "preset" }) { p ->
+                val adAfter = if (com.wizlabs.photofit.AdsSetup.ENABLED && query.isBlank() && list.size > 8) 8 else 0   // after row 8, never while searching
+                items(if (adAfter > 0) list.take(adAfter) else list, key = { it.id }, contentType = { "preset" }) { p ->
                     Box(Modifier.animateItem(fadeInSpec = tween(180), placementSpec = spring(1f, 400f, IntOffset.VisibilityThreshold), fadeOutSpec = tween(120))) {
+                        PresetRow(p, repo.groups.firstOrNull { it.id == p.group }?.label ?: if (p.mine) "Mine" else "") { open(Screen.ExamDetail(p.id)) }
+                    }
+                }
+                if (adAfter > 0) {
+                    item(key = "ad_exam_list", contentType = "ad") { com.wizlabs.photofit.AdsSetup.NativeSlot(com.wizlabs.photofit.AdsSetup.EXAM_LIST) }
+                    items(list.drop(adAfter), key = { it.id }, contentType = { "preset" }) { p ->
                         PresetRow(p, repo.groups.firstOrNull { it.id == p.group }?.label ?: if (p.mine) "Mine" else "") { open(Screen.ExamDetail(p.id)) }
                     }
                 }

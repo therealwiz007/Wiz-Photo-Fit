@@ -155,6 +155,7 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBac
                 if (onPrint != null) GhostButton("Print sheet", onPrint, Modifier.weight(1f))
                 if (onNextPart != null) GhostButton("Next: ${Work.preset?.parts?.getOrNull(Work.partIndex + 1)?.label ?: ""}", onNextPart, Modifier.weight(1f))
             }
+            com.wizlabs.photofit.AdsSetup.NativeSlot(com.wizlabs.photofit.AdsSetup.RESULT, visible = saved && !working && onNextPart == null)
         }
     }
 }

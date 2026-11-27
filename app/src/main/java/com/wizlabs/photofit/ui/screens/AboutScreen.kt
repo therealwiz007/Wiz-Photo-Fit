@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.wizlabs.photofit.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.wizlabs.photofit.ui.components.TopBar
@@ -24,7 +26,7 @@ fun AboutScreen(onBack: () -> Unit, onShowIntro: () -> Unit = {}) {
     val ctx = LocalContext.current
     val version = remember { runCatching { ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName }.getOrNull() ?: "" }
     Column(Modifier.fillMaxSize().background(Wiz.Bg).navigationBarsPadding()) {
-        TopBar("Wiz Photo Fit", "Version $version · Wiz Labs", onBack = onBack)
+        TopBar(stringResource(R.string.app_full_name), "Version $version · Wiz Labs", onBack = onBack)
         com.wizlabs.photofit.ui.components.GhostButton("Show the intro again", onShowIntro, Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
         TrustStrip(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
         // The bundled privacy policy (same file as the website copy). No network is used.
@@ -38,7 +40,9 @@ fun AboutScreen(onBack: () -> Unit, onShowIntro: () -> Unit = {}) {
                     loadUrl("file:///android_asset/privacy-policy.html")
                 }
             },
-            modifier = Modifier.fillMaxWidth().fillMaxSize(),
+            modifier = Modifier.fillMaxWidth().weight(1f),
         )
+        com.wizlabs.photofit.AdsSetup.AdFreeRow()
+        com.wizlabs.photofit.AdsSetup.BannerSlot(com.wizlabs.photofit.AdsSetup.ABOUT)
     }
 }

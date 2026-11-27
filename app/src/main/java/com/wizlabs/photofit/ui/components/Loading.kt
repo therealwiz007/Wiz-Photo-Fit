@@ -148,7 +148,7 @@ fun Modifier.shimmer(): Modifier = composed {
 @Composable
 fun ModelReadyCard(state: ModelStatus.State, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     val (title, sub, col, prog) = when (state) {
-        ModelStatus.State.Ready -> listOf("Face + background tools ready", "Works offline from now on", Wiz.Good, 1f)
+        ModelStatus.State.Ready -> listOf("Face + background tools ready", "Ready to use on your phone", Wiz.Good, 1f)
         ModelStatus.State.Unknown, ModelStatus.State.Checking -> listOf("Checking face + background tools…", "One moment", Wiz.AccentInk, null)
         is ModelStatus.State.Downloading -> listOf("Getting face + background tools",
             if (state.total > 0) "Google Play services · ${state.bytes / 1024 / 1024}.${(state.bytes / 1024 % 1024) / 103} of ${state.total / 1024 / 1024} MB · one time only"

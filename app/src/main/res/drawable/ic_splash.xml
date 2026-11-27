@@ -1,11 +1,11 @@
-<!-- Splash: the text-free mark on a marigold disc (crop marks snap in via the system splash fade). -->
+<!-- Splash: the text-free mark on a marigold disc. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
     <path android:fillColor="#FFC400" android:pathData="M54,54m-52,0a52,52 0 1 0 104,0a52,52 0 1 0 -104,0" />
     <group android:scaleX="0.8" android:scaleY="0.8" android:pivotX="54" android:pivotY="54">
-        <path android:fillColor="#15151A" android:pathData="M42,30 h24 a8,8 0 0 1 8,8 v24 a8,8 0 0 1 -8,8 h-24 a8,8 0 0 1 -8,-8 v-24 a8,8 0 0 1 8,-8z" />
-        <path android:fillColor="#FFFFFF" android:pathData="M54,38 a7.5,7.5 0 1 0 0.01,0z M41,68 a13,13 0 0 1 26,0z" />
-        <path android:strokeColor="#15151A" android:strokeWidth="3" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M27,31 v-8 h8 M73,23 h8 v8 M81,69 v8 h-8 M35,77 h-8 v-8" />
-        <path android:strokeColor="#0EA5E9" android:strokeWidth="2.4" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M36,84 h36 M39,81.5 l-3,2.5 l3,2.5 M69,81.5 l3,2.5 l-3,2.5" />
+        <path android:fillColor="#15151A" android:pathData="M32,24 H76 a8,8 0 0 1 8,8 V68 a8,8 0 0 1 -8,8 H32 a8,8 0 0 1 -8,-8 V32 a8,8 0 0 1 8,-8z" />
+        <path android:fillColor="#FFFFFF" android:pathData="M54,35 a8.5,8.5 0 1 0 0.01,0z M38,64 a16,16 0 0 1 32,0z" />
+        <path android:fillColor="#0EA5E9" android:pathData="M31,70 H77 a7,7 0 0 1 0,14 H31 a7,7 0 0 1 0,-14z" />
+        <path android:strokeColor="#15151A" android:strokeWidth="2.6" android:strokeLineCap="round" android:pathData="M36,70v6M46,70v4M56,70v6M66,70v4M76,70v6" />
     </group>
 </vector>

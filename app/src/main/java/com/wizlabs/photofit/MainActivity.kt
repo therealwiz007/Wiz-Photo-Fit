@@ -26,6 +26,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -43,6 +46,7 @@ import com.wizlabs.photofit.ui.screens.HomeScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+        AdsSetup.debug = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
@@ -52,7 +56,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             WizTheme {
                 ProvideWizMotion {
-                    Box(Modifier.fillMaxSize()) {
+                    // Landscape cutouts: keep content out of the notch side (status/nav bars are handled per screen).
+                    Box(Modifier.fillMaxSize().windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))) {
                         App(link)
                         Box(Modifier.align(Alignment.BottomCenter).windowInsetsPadding(WindowInsets.navigationBars)) {
                             com.wizlabs.photofit.ui.components.UpdatePrompt()
@@ -85,7 +90,9 @@ private fun App(link: String?) {
     val peek = LocalBackPeek.current
     // Once the back transition has played, drop the peek so the next visit starts full size.
     LaunchedEffect(nav.top) { kotlinx.coroutines.delay(650); if (peek != null && !peek.dragging) peek.reset() }
-    WizBackHandler(nav.top.route, enabled = nav.canPop) { nav.pop() }
+    WizBackHandler(nav.top.route, enabled = nav.canPop) {
+        if (nav.top == Screen.Result) AdsSetup.resultExit(com.wizlabs.photofit.data.Work.savedUri != null) { nav.pop() } else nav.pop()
+    }
 
     if (intro) {
         WizBackHandler("intro", enabled = true) { com.wizlabs.photofit.data.Recents.setSeenIntro(ctx); intro = false }
@@ -115,7 +122,7 @@ private fun App(link: String?) {
                     com.wizlabs.photofit.ui.screens.ResultScreen(
                         onNextPart = if (next != null) ({ nav.pop() }) else null,
                         onPrint = if (com.wizlabs.photofit.data.Work.preset?.group == com.wizlabs.photofit.data.IdPresets.GROUP || com.wizlabs.photofit.data.Work.part?.size?.phys != null) ({ nav.push(Screen.PrintSheet) }) else null,
-                        onBack = nav::pop,
+                        onBack = { com.wizlabs.photofit.AdsSetup.resultExit(com.wizlabs.photofit.data.Work.savedUri != null) { nav.pop() } },
                     )
                 }
                 Screen.IdList -> com.wizlabs.photofit.ui.screens.IdListScreen(nav::push, nav::pop)

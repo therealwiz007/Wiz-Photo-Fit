@@ -152,13 +152,12 @@ fun Pill(text: String, color: Color = Wiz.AccentInk, modifier: Modifier = Modifi
     }
 }
 
-/** "No ads · Works offline · 0 permissions" trust row. Offline is true for resizing; INTERNET is only for updates. */
+/** Trust row: photos are processed on the phone, no account. (No ad / offline / permission-count claims: INTERNET is declared.) */
 @Composable
 fun TrustStrip(modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
-        Pill("No ads", Wiz.Good, icon = { GlyphNoAds(Wiz.Good) })
-        Pill("Works offline", Wiz.Good, icon = { GlyphNoWifi(Wiz.Good) })
-        Pill("0 permissions", Wiz.Good, icon = { GlyphShield(Wiz.Good) })
+        Pill("On-device", Wiz.Good, icon = { GlyphShield(Wiz.Good) })
+        Pill("No login", Wiz.Good)
     }
 }
 

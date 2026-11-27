@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
@@ -31,8 +32,6 @@ import com.google.android.play.core.install.model.UpdateAvailability
  * Non-blocking Play In-App Updates card (flexible). Shown on every launch until the user updates.
  * Never blocks the app: the user can tap "Later". No ads, no network calls from the app itself.
  */
-private const val UPDATE_REQUEST_CODE = 4107
-
 @Composable
 fun UpdatePrompt(modifier: Modifier = Modifier) {
     val activity = LocalContext.current as? Activity ?: return
@@ -41,6 +40,7 @@ fun UpdatePrompt(modifier: Modifier = Modifier) {
     var downloaded by remember { mutableStateOf(false) }
     var dismissed by remember { mutableStateOf(false) }
     var pendingInfo by remember { mutableStateOf<AppUpdateInfo?>(null) }
+    val updateLauncher = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult()) { }
 
     DisposableEffect(manager) {
         val listener = InstallStateUpdatedListener { state ->
@@ -73,7 +73,7 @@ fun UpdatePrompt(modifier: Modifier = Modifier) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
 
             Text(
-                if (downloaded) "Update ready. Restart to finish." else "A new version of Wiz Photo Fit is available.",
+                if (downloaded) "Update ready. Restart to finish." else "A new version of ${androidx.compose.ui.res.stringResource(com.wizlabs.photofit.R.string.app_full_name)} is available.",
                 modifier = Modifier.weight(1f),
                 color = Wiz.Text,
                 style = MaterialTheme.typography.bodyMedium,
@@ -81,7 +81,7 @@ fun UpdatePrompt(modifier: Modifier = Modifier) {
             TextButton(onClick = { dismissed = true }) { Text("Later", color = Wiz.Muted) }
             TextButton(onClick = {
                 if (downloaded) manager.completeUpdate()
-                else pendingInfo?.let { manager.startUpdateFlowForResult(it, AppUpdateType.FLEXIBLE, activity, UPDATE_REQUEST_CODE) }
+                else pendingInfo?.let { manager.startUpdateFlowForResult(it, updateLauncher, AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()) }
             }) { Text(if (downloaded) "Restart" else "Update", color = Wiz.AccentInk) }
         }
     }
