@@ -38,7 +38,8 @@ Date: 2026-11-28. Release built from `main` (tip 99f8b06, merge 34345fb includes
 - Full description 3104/4000 (matches `fastlane/metadata/android/en-US/full_description.txt`)
 - Release notes (en-US, from `changelogs/4.txt`) pasted with `<en-US>` tags.
 - No banned words (best, #1, top, free, price) in en-US text.
-- hi-IN listing text in Play was NOT updated in this run. Its old text may still contain outdated claims (for example "no internet permission"). Needs a separate edit before the next release.
+- hi-IN listing (saved): title `Wiz Photo Fit: परीक्षा फोटो KB` 30/30, short 70/80, full 1930/4000, matching `fastlane/metadata/android/hi-IN/`. The old Play hi-IN text said "पूरी तरह ऑफलाइन, कोई विज्ञापन नहीं, कोई परमिशन नहीं" (fully offline, no ads, no permissions) and "इंटरनेट परमिशन नहीं", both now false; both removed.
+- Publishing overview after the hi-IN save: "Changes in review", no unsent changes shown.
 
 ## Competitor ASO check (step 8c)
 - Scope: query "exam photo resizer" only (India, English), top 5 distinct apps checked: Exam Photo Resizer & Editor (Apptivize), Photo Resizer & Signature 20KB (Aarvion), GovPhoto (Dhanuk Softwares), Photo Resizer for Form Fill Up (FairSoftTech), Photo & Picture Resizer (Farluner). All 5 show "Contains ads" and in-app purchases/ads.
@@ -57,7 +58,6 @@ Date: 2026-11-28. Release built from `main` (tip 99f8b06, merge 34345fb includes
 - Production: NOT touched. Needs a separate explicit yes from the user. Play also needs 12+ opted-in testers for 14 days on new personal-account apps; current count not checked.
 
 ## Outstanding issues
-1. hi-IN listing text in Play not updated (see above).
 2. Competitor check covers one query, not all six.
 3. Data safety and App content declarations not re-verified in this run.
 4. Snip emotion recording is a screencap sequence, not a screenrecord (from Sonnet's STATUS.md); no store impact.
