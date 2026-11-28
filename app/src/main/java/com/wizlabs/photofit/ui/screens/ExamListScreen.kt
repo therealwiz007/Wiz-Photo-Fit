@@ -87,7 +87,7 @@ fun ExamListScreen(repo: PresetRepo, open: (Screen) -> Unit, onBack: () -> Unit)
             ) {
                 if (list.isEmpty()) item(key = "empty") {
                     Column(Modifier.fillMaxWidth().padding(top = 32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        com.wizlabs.photofit.ui.mascot.Snip(com.wizlabs.photofit.engine.SnipExpression.SEARCHING, com.wizlabs.photofit.engine.SnipAction.LOOK_SIDE, 96.dp)
+                        com.wizlabs.photofit.ui.mascot.Snip(com.wizlabs.photofit.engine.SnipExpression.THINKING, com.wizlabs.photofit.engine.SnipAction.LOOK_SIDE, 96.dp)
                         Spacer(Modifier.height(8.dp))
                         Text("No exam found", color = Wiz.Text, style = MaterialTheme.typography.titleLarge)
                         Spacer(Modifier.height(6.dp))

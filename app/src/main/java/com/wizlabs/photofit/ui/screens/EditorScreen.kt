@@ -166,7 +166,7 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                         srcSize = IntSize(r.width.roundToInt().coerceAtLeast(1), r.height.roundToInt().coerceAtLeast(1)),
                         dstSize = IntSize(size.width.roundToInt(), size.height.roundToInt()), filterQuality = androidx.compose.ui.graphics.FilterQuality.Medium)
                     // corner brackets
-                    val arm = size.minDimension * 0.14f; val w = 4.dp.toPx(); val c = Wiz.Accent
+                    val arm = size.minDimension * 0.14f; val w = 4.dp.toPx(); val c = androidx.compose.ui.graphics.Color(0xFF8B8CFF)
                     val e = w / 2
                     for ((x, y, dx, dy) in listOf(listOf(e, e, 1f, 1f), listOf(size.width - e, e, -1f, 1f), listOf(e, size.height - e, 1f, -1f), listOf(size.width - e, size.height - e, -1f, -1f))) {
                         drawLine(c, Offset(x, y), Offset(x + dx * arm, y), w, StrokeCap.Round); drawLine(c, Offset(x, y), Offset(x, y + dy * arm), w, StrokeCap.Round)
@@ -174,7 +174,7 @@ fun EditorScreen(onDone: () -> Unit, onBack: () -> Unit) {
                     if (part.kind == PartKind.PHOTO || part.kind == PartKind.POSTCARD) {
                         // head guide: face should fill this oval
                         val ow = size.width * 0.52f; val oh = size.height * 0.5f
-                        drawOval(Wiz.Accent.copy(alpha = 0.7f), Offset((size.width - ow) / 2, size.height * 0.14f), Size(ow, oh), style = Stroke(2.dp.toPx()))
+                        drawOval(androidx.compose.ui.graphics.Color(0xFF38BDF8).copy(alpha = 0.8f), Offset((size.width - ow) / 2, size.height * 0.14f), Size(ow, oh), style = Stroke(2.dp.toPx()))
                     }
                 }
             }

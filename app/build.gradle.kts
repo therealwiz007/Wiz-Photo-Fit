@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -23,6 +25,9 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // House rule: local release builds use the common Wiz key (read by absolute path, never copied or printed);
+            // CI uses the KEYSTORE_* GitHub secrets.
+            val common = file("/Users/aashish/Desktop/Personal FIles/Wiz Labs/KEYS/keystore.properties")
             val ks = System.getenv("KEYSTORE_FILE")
             if (!ks.isNullOrBlank()) {
                 signingConfig = signingConfigs.create("release") {
@@ -30,6 +35,14 @@ android {
                     storePassword = System.getenv("KEYSTORE_PASSWORD")
                     keyAlias = System.getenv("KEY_ALIAS")
                     keyPassword = System.getenv("KEY_PASSWORD")
+                }
+            } else if (common.exists()) {
+                val props = Properties().apply { common.inputStream().use { load(it) } }
+                signingConfig = signingConfigs.create("release") {
+                    storeFile = file(props.getProperty("storeFile"))
+                    storePassword = props.getProperty("storePassword")
+                    keyAlias = props.getProperty("keyAlias")
+                    keyPassword = props.getProperty("keyPassword")
                 }
             }
         }

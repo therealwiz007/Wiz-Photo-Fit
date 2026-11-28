@@ -1,6 +1,5 @@
 <resources>
-    <color name="wiz_bg">#FAFAF7</color>
-    <color name="wiz_marigold">#FFC400</color>
+    <color name="wiz_bg">#F7F8FC</color>
     <string name="app_name">Photo Fit</string>
     <string name="app_full_name">Wiz Photo Fit</string>
 

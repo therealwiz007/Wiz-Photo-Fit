@@ -19,31 +19,31 @@ import androidx.compose.ui.unit.sp
 import com.wizlabs.photofit.R
 
 /**
- * "Studio Marigold" colour tokens, light-first. Each getter reads [dark] (Compose state), so every screen
+ * "Studio Indigo" colour tokens, light-first. Each getter reads [dark] (Compose state), so every screen
  * that reads `Wiz.X` in composition or draw re-themes when the system theme flips.
- * Accent = marigold fill (buttons, chips). AccentInk = marigold-family colour that is legible as text/icons.
+ * Accent = indigo primary (fills: buttons, chips). AccentInk = the same indigo, used for text/icons.
  */
 object Wiz {
     var dark by mutableStateOf(false)
     private fun p(l: Long, d: Long) = Color(if (dark) d else l)
-    val Bg get() = p(0xFFFAFAF7, 0xFF0F0F12)
-    val Bar get() = p(0xFFFFFFFF, 0xFF18181D)
-    val Panel get() = p(0xFFFFFFFF, 0xFF18181D)
-    val PanelHi get() = p(0xFFF1F0EA, 0xFF222229)
-    val Line get() = p(0xFFE6E4DC, 0xFF2D2D36)
-    val Accent = Color(0xFFFFC400)
-    val AccentDeep = Color(0xFFE0A800)
-    val OnAccent = Color(0xFF1A1400)
-    val AccentInk get() = p(0xFF8F6A00, 0xFFFFD54D)
-    val Guide get() = p(0xFF0EA5E9, 0xFF38BDF8)
-    val Text get() = p(0xFF15151A, 0xFFF3F3F6)
-    val Muted get() = p(0xFF62626E, 0xFF9A9AA8)
-    val Good get() = p(0xFF16A34A, 0xFF34D399)
+    val Bg get() = p(0xFFF7F8FC, 0xFF0E1020)
+    val Bar get() = p(0xFFFFFFFF, 0xFF171A2E)
+    val Panel get() = p(0xFFFFFFFF, 0xFF171A2E)
+    val PanelHi get() = p(0xFFEEF0F9, 0xFF20243C)
+    val Line get() = p(0xFFDFE3F1, 0xFF2C3150)
+    val Accent get() = p(0xFF4338CA, 0xFF8B8CFF)
+    val AccentDeep get() = p(0xFF312E81, 0xFF6D6EF0)
+    val OnAccent get() = p(0xFFFFFFFF, 0xFF0E1020)
+    val AccentInk get() = p(0xFF4338CA, 0xFF8B8CFF)
+    val Guide get() = p(0xFF0284C7, 0xFF38BDF8)
+    val Text get() = p(0xFF12142A, 0xFFEEF0FF)
+    val Muted get() = p(0xFF5A5F7D, 0xFF9DA3C4)
+    val Good get() = p(0xFF15803D, 0xFF34D399)
     val Warn get() = p(0xFFC2410C, 0xFFFB923C)
     val Bad get() = p(0xFFDC2626, 0xFFF87171)
     /** Editor canvas: dark in both themes so photos read true. */
-    val Canvas = Color(0xFF2A2A30)
-    val CanvasCheck = Color(0xFF33333A)
+    val Canvas = Color(0xFF23263A)
+    val CanvasCheck = Color(0xFF2C3048)
 }
 
 /** Numbers always use tabular figures so KB / px values don't jitter while they roll. */

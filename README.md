@@ -15,12 +15,14 @@ CI (`.github/workflows/android.yml`) builds the signed release APK and AAB on ev
 Design: `../WIZ_PHOTO_FIT_SPEC.md`, `../WIZ_PHOTO_FIT_ARCHITECTURE.md`. Presets: `app/src/main/assets/presets.json`.
 
 ## Changelog
-### 1.3.0 (4) - ad slots (ads OFF), new icon and store art, edge-to-edge
+### 1.3.0 (4) - Studio Indigo, livelier Snip, ad slots (ads OFF), new icon and store art, edge-to-edge
+- New "Studio Indigo" theme (indigo + sky, light and dark). No black/yellow left in the app.
+- Snip is always alive on Home (72 dp): blinks, breathes, glances at search, idle beat every 8-15 s; 10 emotions with eyebrows; reacts to search, downloads, checks, saving; four tap reactions with a haptic tick.
 - `wiz-ads` 0.3 SDK-free module and `AdsSetup.kt`: slots `result`, `exam_list`, `about`, `result_exit`, `adfree` with `ENABLED=false` (zero height, no ad SDK, no AdMob dependency). Debug guard + `AdsSetupTest`.
 - Launcher label "Photo Fit"; "Wiz Photo Fit" stays in About, update prompt and the Play title.
 - New text-free launcher icon, splash, feature graphic and 8 screenshots captured from the real app.
 - Android 15 edge-to-edge: no deprecated window APIs, cutout-safe in landscape.
-- Removed "no ads / offline / 0 permissions" wording (INTERNET is declared).
+- Removed the old offline, permission-count and ad-free wording (INTERNET is declared).
 
 ### 1.1.0 (2) - Studio Marigold redesign
 - New light-first "Studio Marigold" look (dark theme follows the system), Plus Jakarta Sans + DM Mono, new text-free adaptive + monochrome icon, splash.

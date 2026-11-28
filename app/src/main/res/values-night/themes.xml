@@ -1,5 +1,5 @@
 <resources>
-    <color name="wiz_bg">#0F0F12</color>
+    <color name="wiz_bg">#0E1020</color>
     <style name="Theme.WizPhotoFit" parent="@android:style/Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/wiz_bg</item>
     </style>

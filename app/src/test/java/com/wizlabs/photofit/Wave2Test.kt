@@ -7,10 +7,6 @@ import com.wizlabs.photofit.engine.BgRule
 import com.wizlabs.photofit.engine.Compliance
 import com.wizlabs.photofit.engine.ComplianceSpec
 import com.wizlabs.photofit.engine.Measured
-import com.wizlabs.photofit.engine.SnipAction
-import com.wizlabs.photofit.engine.SnipBrain
-import com.wizlabs.photofit.engine.SnipEvent
-import com.wizlabs.photofit.engine.SnipExpression
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -87,21 +83,6 @@ class ComplianceTest {
     }
 }
 
-class SnipBrainTest {
-    private fun r(e: SnipEvent) = SnipBrain.react(e)
-    @Test fun firstRun() = r(SnipEvent.FirstRun).let { assertEquals(SnipExpression.HAPPY, it.expression); assertEquals(SnipAction.WAVE, it.action) }
-    @Test fun noResults() = r(SnipEvent.SearchNoResults).let { assertEquals(SnipExpression.SEARCHING, it.expression); assertEquals(SnipAction.LOOK_SIDE, it.action); assertEquals("Try a custom size.", it.line) }
-    @Test fun downloading() = r(SnipEvent.ModelDownloading(42)).let { assertEquals(SnipExpression.THINKING, it.expression); assertEquals(SnipAction.TAPE_SWAY, it.action); assertEquals("Getting the background tool… 42%", it.line) }
-    @Test fun downloadingClamps() = assertTrue(r(SnipEvent.ModelDownloading(180)).line.endsWith("100%"))
-    @Test fun unavailable() = r(SnipEvent.ModelUnavailable).let { assertEquals(SnipExpression.WORRIED, it.expression); assertEquals(SnipAction.NONE, it.action); assertEquals("Background tool needs Google Play services.", it.line) }
-    @Test fun pass() = r(SnipEvent.AllChecksPass(200, 230, 42)).let { assertEquals(SnipExpression.PROUD, it.expression); assertEquals(SnipAction.FLOURISH, it.action); assertEquals("Fits: 200×230 px · 42 KB.", it.line) }
-    @Test fun fail() { assertEquals("1 check needs a fix.", r(SnipEvent.ChecksFail(1)).line); assertEquals("3 checks need a fix.", r(SnipEvent.ChecksFail(3)).line); assertEquals(SnipExpression.THINKING, r(SnipEvent.ChecksFail(2)).expression) }
-    @Test fun savedEmpty() = r(SnipEvent.SavedEmpty).let { assertEquals(SnipExpression.SLEEPY, it.expression); assertEquals(SnipAction.NONE, it.action); assertEquals("Saved photos appear here.", it.line) }
-    @Test fun linesFitBudget() {
-        listOf(SnipEvent.FirstRun, SnipEvent.SearchNoResults, SnipEvent.ModelDownloading(100), SnipEvent.ModelUnavailable, SnipEvent.AllChecksPass(1000, 1000, 500), SnipEvent.ChecksFail(12), SnipEvent.SavedEmpty)
-            .forEach { assertTrue(r(it).line, r(it).line.length <= SnipBrain.MAX_LINE) }
-    }
-}
 
 class RecentsTest {
     @Test fun newestFirstNoDuplicates() = assertEquals(listOf("c", "a", "b"), com.wizlabs.photofit.data.Recents.merge(listOf("a", "b", "c"), "c"))

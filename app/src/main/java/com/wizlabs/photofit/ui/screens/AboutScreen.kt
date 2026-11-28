@@ -33,7 +33,7 @@ fun AboutScreen(onBack: () -> Unit, onShowIntro: () -> Unit = {}) {
         AndroidView(
             factory = { c ->
                 WebView(c).apply {
-                    setBackgroundColor(if (Wiz.dark) 0xFF0F0F12.toInt() else 0xFFFAFAF7.toInt())
+                    setBackgroundColor(if (Wiz.dark) 0xFF0E1020.toInt() else 0xFFF7F8FC.toInt())
                     settings.javaScriptEnabled = false
                     settings.allowFileAccess = false
                     settings.blockNetworkLoads = true
