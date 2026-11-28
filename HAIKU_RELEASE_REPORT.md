@@ -1,84 +1,65 @@
-# Haiku release report: Wiz Photo Fit 1.1.0 (2)
+# Haiku release report: Wiz Photo Fit 1.3.0 (4)
 
-Date: 2026-11-26. Branch merged to main (fast-forward) at e76388a.
+Date: 2026-11-28. Release built from `main` (tip 99f8b06, merge 34345fb includes 1575fa9). Feature branch not merged again.
 
-## Version and build
-- applicationId com.wizlabs.photofit, versionCode 2, versionName 1.1.0, minSdk 26, targetSdk 36, compileSdk 36.
-- Local: `gradle --offline :app:testDebugUnitTest :app:assembleRelease` BUILD SUCCESSFUL. Unit tests 53 run, 0 failures, 0 errors (counted from XML results). Unsigned release APK 1,894,235 bytes.
-- CI (run 45743657858, push to main): success. Artifacts: `Wiz Photo Fit (1.1.0) AAB` 4,389,553 bytes, `Wiz Photo Fit (1.1.0) APK` 1,719,763 bytes.
-- Local copies: dist/ci/Wiz Photo Fit (1.1.0) AAB/Wiz Photo Fit (1.1.0).aab (4,534,859 bytes on disk; gitignored).
+## Version
+- applicationId com.wizlabs.photofit, versionCode 4, versionName 1.3.0, minSdk 26, targetSdk 36, compileSdk 36 (`app/build.gradle.kts`)
+- Play track: Closed testing - Alpha, release name `4 (1.3.0)`. Previous release 3 (1.2.0) stays live.
 
-## Signing
-- `jarsigner -verify -certs` on the AAB: jar verified, signed by CN=Wiz Labs, OU=Wiz Labs, O=Wiz Labs, L=Ambala, ST=Haryana, C=IN. Signature file alias WIZFUELD.
-- Same signer as the 1.0.0 (1) AAB in play-uploads-v2 (matching upload key).
-- APK badging (aapt2 on CI APK): package com.wizlabs.photofit, versionCode 2, versionName 1.1.0, targetSdk 36.
-- Secrets and keystore not printed, copied or changed.
-- Not checked: AAB manifest versionCode read directly (no bundletool here). Versioning taken from the CI APK built from the same commit.
+## Build and tests
+- `gradle --offline :app:testDebugUnitTest :app:assembleRelease`: BUILD SUCCESSFUL. Unit tests 76 run, 0 failures, 0 errors (counted from `app/build/test-results`).
+- Release APK (local, signer CN=Wiz Labs): 1,921,057 bytes.
+- CI "Wiz Photo Fit - Production APK and AAB" on main tip 99f8b06: success (run 46158414607).
 
-## Play Console (Closed testing - Alpha)
-- Existing 1.0.0 (1): live on the track ("Available to selected testers", released Nov 14 2026, 178 countries). Publishing submissions for the app: 0 in review. No review in progress.
-- New draft release "2 (1.1.0)" created on Closed testing - Alpha:
-  - AAB uploaded (App bundle 2 (1.1.0), API 26+, target SDK 36, 4 ABIs).
-  - Release notes en-US (changelogs/2.txt, wrapped in language tags). hi-IN not provided.
-  - Saved. Publishing overview: "Changes not yet submitted for review" (Closed testing - Alpha, 2 (1.1.0)).
-  - NOT sent for review.
-- Warning shown by Play: native code without debug symbols (optional symbol upload).
-- Not done: store listing screenshots upload (en-US, 8 images in order from store-assets/screenshots/). Listing page not reached in this run.
+## AAB
+- Path: `dist/ci/Wiz Photo Fit (1.3.0) AAB/Wiz Photo Fit (1.3.0).aab` (gitignored)
+- Size 4,586,075 bytes (under the 10 MB split limit, uploaded as one file)
+- SHA-256 399a67e3847132f672250fc912dda5c08d8e2848afb768c3232c4b3f910b2272
+- Signer: `CN=Wiz Labs, OU=Wiz Labs, O=Wiz Labs, L=Ambala, ST=Haryana, C=IN` (from `META-INF/*.RSA`). Upload accepted, no key-mismatch error.
+- Play bundle row shows version 4 (1.3.0), API 26+, target SDK 36.
+- versionCode 4 confirmed in the local APK manifest and in source; the AAB's binary manifest was not decoded (no bundletool here).
 
-## Store assets and listing
-- icon-512.png: 512x512, text-free. OK.
-- feature-graphic-1024x500.png: 1024x500. OK.
-- screenshots 1-8: all 1080x1920. Not re-viewed in this run.
-- Title (30 chars): "Wiz Photo Fit: Exam Photo&Sign". OK.
-- Short description: 75 chars. OK.
-- Full description en-US: 2,941 chars. Changed: "Small download and smooth on low-end phones" -> "Small download" (claim not verified: jank inconclusive, cold start over target).
-- Hindi (hi-IN) full description still has no new-feature text. Known.
-- Promo-word scan of en-US listing and changelog: no hits for best, #1, top, free, price, ads, promo.
+## Permissions (merged APK manifest)
+- `android.permission.INTERNET`, `android.permission.ACCESS_NETWORK_STATE`, the AndroidX `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` signature permission. No AD_ID, no AdMob app-ID meta-data.
+- Ads SDK check: `grep` for `com.google.android.gms.ads` and `ump` in app sources returned 0 hits; APK contains 0 entries matching gms/ads, ump or admob.
+- AdsSetup `ENABLED = false`; ad slots have zero height. Play "Contains ads" must stay **No**.
 
-## Claims vs build (spot-checked in code)
-- Present: name+date on photo (PresetBuilderScreen), join (SavedJoin), WebP output (CompressScreen, BitmapCodec), face and background tools (FaceFinder, BackgroundSwap), compare slider (CompareSlider), compliance check (Compliance), search (SearchIndex), recents (Recents), Snip (SnipBrain, SnipArt).
-- Not verified on device: automatic face fit and background swap on a Play-services device; TalkBack; tablet; 200 % font scale.
+## Store assets
+- App icon: `store-assets/icon-512.png` (512x512). Play now shows 1 icon (the new tape-card icon). Old icon removed.
+- Feature graphic: `store-assets/feature-graphic-1024x500.png` (1024x500). Old feature graphic (which claimed "No ads / Offline / 0 permissions") removed; new one saved.
+- Phone screenshots: `store-assets/screenshots/1.png`..`8.png` (1080x1920). Restyled this run to headline + subline + larger phone frame, using only real emulator captures. Uploaded in order 1..8 (verified via DOM order). All 8 old `01-home`..`08-compress` screenshots deleted.
+- Generator: `tools/store-art/make_shots.py` (changed; uncommitted until the report commit).
+- hi-IN: no graphics in repo; none uploaded.
+- Tablet / foldable / desktop / XR screenshots: none in repo; not uploaded.
 
-## Privacy policy
-- Changed (privacy-policy.html at root and app/src/main/assets/, identical): ML Kit line now says Google Play services downloads the models once, the app runs them on the phone, the app has no internet access, and the download is under Google's privacy policy. "Last updated" 26 November 2026.
-- Published by GitHub Pages from main (source branch main, path /). Live after the merge; not re-fetched in this run.
+## Listing text (en-US, saved in Play)
+- Title `Wiz Photo Fit: Exam Photo&Sign` 30/30
+- Short description 75/80
+- Full description 3104/4000 (matches `fastlane/metadata/android/en-US/full_description.txt`)
+- Release notes (en-US, from `changelogs/4.txt`) pasted with `<en-US>` tags.
+- No banned words (best, #1, top, free, price) in en-US text.
+- hi-IN listing text in Play was NOT updated in this run. Its old text may still contain outdated claims (for example "no internet permission"). Needs a separate edit before the next release.
 
-## Data safety (not changed; needs owner answers)
-- Current declaration: no data collected.
-- Proposed review: Play-services ML Kit model download may count as Device or other IDs and Diagnostics. Owner must confirm before any change in Play Console.
-- Not yet read from the Play Console Data safety page in this run.
+## Competitor ASO check (step 8c)
+- Scope: query "exam photo resizer" only (India, English), top 5 distinct apps checked: Exam Photo Resizer & Editor (Apptivize), Photo Resizer & Signature 20KB (Aarvion), GovPhoto (Dhanuk Softwares), Photo Resizer for Form Fill Up (FairSoftTech), Photo & Picture Resizer (Farluner). All 5 show "Contains ads" and in-app purchases/ads.
+- Queries "photo size in KB", "signature resizer", "passport size photo", "SSC photo size", "compress photo to 20 KB" and the Hindi queries were NOT analysed.
+- Decision: no listing text edit. The current en-US short and full descriptions already contain the competitor keywords (SSC, NEET, JEE, bank, KB, signature). No copying of competitor text.
 
-## Compliance checks
-- Merged manifest: no INTERNET, no ACCESS_NETWORK_STATE; only AndroidX DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION (signature). Matches "no permissions" declaration.
-- Ads: No (no ad SDK).
-- Target audience 18+ and India-only availability: not re-checked in Play Console this run.
+## Data safety, App content, declarations
+- Data safety: not re-edited in this run. Handoff says it is unchanged vs 1.2.0 (Device IDs + Diagnostics via ML Kit, not shared). INTERNET is used by Play in-app updates; no ad data.
+- App content overview: "You're all caught up", nothing pending.
+- Ads = No, target audience 18+, India-only: as already set; not re-verified in this run.
+- Edge-to-edge warnings (step 8b): not present in the Play review screen for this release. The only warning was "Changes to your supported devices" (informational). Pre-launch report not checked.
 
-## Production
-- Not touched. Requires explicit owner approval. 12+ opted-in testers for 14 days may apply to new personal accounts; count not read.
+## Submission status
+- Release saved on Closed testing - Alpha, then "Send changes for review" clicked.
+- Publishing overview now shows **"Changes in review"** for Photo Fit (4 (1.3.0)). Seen on screen; not yet approved.
+- Production: NOT touched. Needs a separate explicit yes from the user. Play also needs 12+ opted-in testers for 14 days on new personal-account apps; current count not checked.
 
-## Ads-ready 1.2.0 (not done)
-- Blocked on decision: wiz-ads (/Users/aashish/Desktop/Personal FIles/Claude Code/wiz-ads) header says v0.2 links the GMA Next-Gen SDK and UMP. The SDK-free v0.1 pattern (PDF Master 1.5.0) adds no ad SDK. Need owner pick: v0.1 SDK-free, or v0.2 with SDK.
-- Going ads-ready also drops the "No internet" claim (listing, trust text, README, privacy policy) and needs Data safety changes.
-
-## Outstanding issues (unchanged from Sonnet)
-- Cold start 1.2–2.1 s compiled on emulator vs 1.1 s target.
-- Face auto-fit and background swap untested on a Play-services device.
-- No tablet layout.
-- Hindi listing lacks new-feature text.
-- Native debug symbols not uploaded (Play warning).
-
-## Status summary
-- Merged and pushed: yes (main, e76388a).
-- CI AAB: built, downloaded, signed by Wiz Labs.
-- Play draft 2 (1.1.0): AAB and notes staged, not submitted.
-- Waiting on owner: Data safety answers, store screenshots upload, ads-ready decision, review submit yes, production (no).
-
-## Store graphics replaced (2026-11-26) — BLOCKED, nothing changed on Play
-
-- Asset check: icon-512.png 512x512, feature-graphic-1024x500.png 1024x500, screenshots/1-result..8-dark.png all 1080x1920. OK.
-- Play Console app: "Photo Fit: Exam Photo & Sign" (id 4976075306683317179, developer 5669646636695105274, Wiz Labs). No sign-in prompt seen.
-- Default store listing (en-US) opened. Current graphics: icon, feature graphic, 8 phone screenshots (old look). Tablet/foldable slots present, not touched.
-- Removed the 8 old phone screenshots in the page, then could not upload: "Add assets" opens a native file picker that Claude in Chrome tools cannot reach (no file input in DOM). Computer-use cannot read Chrome (browser tier is read-only), would need full screen control.
-- Unsaved removals discarded. Listing back to old graphics (8/8 phone shots). Not saved, not sent for review, public listing unchanged.
-- Not done: icon, feature graphic, screenshot upload, translations check, review submit, public verification.
-- Next: run upload with full screen control or manual upload in Play Console using the files above (order 1-result to 8-dark).
+## Outstanding issues
+1. hi-IN listing text in Play not updated (see above).
+2. Competitor check covers one query, not all six.
+3. Data safety and App content declarations not re-verified in this run.
+4. Snip emotion recording is a screencap sequence, not a screenrecord (from Sonnet's STATUS.md); no store impact.
+5. Face auto-fit and background swap not tested on a device with Play-services ML modules (STATUS.md).
+6. Local release key is the common Wiz key. 1.0.0 used the older "photo fit" key; Play accepted the 1.3.0 AAB under the common key.
