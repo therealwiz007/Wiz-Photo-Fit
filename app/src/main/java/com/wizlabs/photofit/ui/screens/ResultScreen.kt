@@ -86,6 +86,7 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBac
     val name = remember(o) { Exporter.fileName(Work.preset?.name ?: "photo", part, o.format) }
     var saved by remember { mutableStateOf(Work.savedUri != null) }
     var working by remember { mutableStateOf(false) }
+    var shareN by remember { mutableStateOf(0) }
     val createDoc = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(o.format.mime)) { uri ->
         if (uri != null && Exporter.writeTo(ctx, uri, o.bytes)) { Work.savedUri = uri; saved = true; haptics.confirm() }
     }
@@ -130,7 +131,7 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBac
             }
             Spacer(Modifier.height(12.dp))
             val checks = remember(o, part) { computeChecks(part, o, img) }
-            CheckCard(checks, o, Modifier.enterRise(2))
+            CheckCard(checks, o, shareN * 2 + (if (saved) 1 else 0), Modifier.enterRise(2))
             val original = Work.source
             if (original != null) {
                 Spacer(Modifier.height(12.dp))
@@ -144,7 +145,7 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBac
             Spacer(Modifier.height(16.dp))
         }
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            PrimaryButton("Share", { haptics.tap(); ctx.startActivity(Exporter.shareIntent(ctx, o.bytes, name, o.format)) }, Modifier.fillMaxWidth(), icon = Icons.Default.Share, enabled = !working)
+            PrimaryButton("Share", { haptics.tap(); shareN++; ctx.startActivity(Exporter.shareIntent(ctx, o.bytes, name, o.format)) }, Modifier.fillMaxWidth(), icon = Icons.Default.Share, enabled = !working)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (!Exporter.canAutoSave() || !saved) GhostButton("Save", {
                     if (Exporter.canAutoSave()) scope.launch {
@@ -155,6 +156,7 @@ fun ResultScreen(onNextPart: (() -> Unit)?, onPrint: (() -> Unit)? = null, onBac
                 if (onPrint != null) GhostButton("Print sheet", onPrint, Modifier.weight(1f))
                 if (onNextPart != null) GhostButton("Next: ${Work.preset?.parts?.getOrNull(Work.partIndex + 1)?.label ?: ""}", onNextPart, Modifier.weight(1f))
             }
+            com.wizlabs.photofit.AdsSetup.NativeSlot(com.wizlabs.photofit.AdsSetup.RESULT, visible = saved && !working && onNextPart == null)
         }
     }
 }
@@ -200,14 +202,15 @@ private fun computeChecks(part: com.wizlabs.photofit.data.Part, o: Render.Output
 }
 
 @Composable
-private fun CheckCard(checks: List<com.wizlabs.photofit.engine.Check>, o: Render.Output, modifier: Modifier = Modifier) {
+private fun CheckCard(checks: List<com.wizlabs.photofit.engine.Check>, o: Render.Output, savedKey: Int, modifier: Modifier = Modifier) {
     val failed = com.wizlabs.photofit.engine.Compliance.failed(checks)
     val mood = if (failed == 0) com.wizlabs.photofit.engine.SnipBrain.react(com.wizlabs.photofit.engine.SnipEvent.AllChecksPass(o.widthPx, o.heightPx, o.bytes.size / 1000))
         else com.wizlabs.photofit.engine.SnipBrain.react(com.wizlabs.photofit.engine.SnipEvent.ChecksFail(failed))
     WizCard(modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                com.wizlabs.photofit.ui.mascot.Snip(mood.expression, mood.action, 56.dp)
+                val savedMood = com.wizlabs.photofit.engine.SnipBrain.react(com.wizlabs.photofit.engine.SnipEvent.Saved)
+                com.wizlabs.photofit.ui.mascot.Snip(mood.expression, mood.action, 56.dp, oneShot = savedMood.shot, shotMs = savedMood.shotMs, shotKey = savedKey)
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(if (failed == 0) "All checks pass" else "Needs a fix", color = if (failed == 0) Wiz.Good else Wiz.Bad, style = MaterialTheme.typography.titleMedium)

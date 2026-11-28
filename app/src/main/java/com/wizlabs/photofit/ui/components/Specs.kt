@@ -32,7 +32,7 @@ object SpecText {
     fun line(p: Part): String = listOfNotNull(px(p), phys(p), kb(p), p.format.ext.uppercase()).joinToString("  ·  ")
 }
 
-private val badgeColors = listOf(0xFFFFC400, 0xFF2BD97C, 0xFF4DA3FF, 0xFFFF8A65, 0xFFB388FF, 0xFF4DD0E1, 0xFFFF5A8A, 0xFFAED581)
+private val badgeColors = listOf(0xFF4338CA, 0xFF2BD97C, 0xFF4DA3FF, 0xFFFF8A65, 0xFFB388FF, 0xFF4DD0E1, 0xFFFF5A8A, 0xFFAED581)
 
 /** Neutral coloured initials (no exam-body logos). */
 @Composable

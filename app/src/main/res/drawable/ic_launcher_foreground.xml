@@ -1,10 +1,9 @@
-<!-- Wiz Photo Fit mark (text-free): ink photo frame, white portrait, four crop marks, sky dimension arrow. -->
+<!-- Photo Fit mark v3 "tape card" (text-free): white photo frame with a portrait, sky crop marks and a sky tape measure. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-    <path android:fillColor="#15151A" android:pathData="M42,30 h24 a8,8 0 0 1 8,8 v24 a8,8 0 0 1 -8,8 h-24 a8,8 0 0 1 -8,-8 v-24 a8,8 0 0 1 8,-8z" />
-    <path android:fillColor="#FFFFFF" android:pathData="M54,38 a7.5,7.5 0 1 0 0.01,0z M41,68 a13,13 0 0 1 26,0z" />
-    <path android:strokeColor="#15151A" android:strokeWidth="3" android:strokeLineCap="round" android:strokeLineJoin="round"
-        android:pathData="M27,31 v-8 h8 M73,23 h8 v8 M81,69 v8 h-8 M35,77 h-8 v-8" />
-    <path android:strokeColor="#0EA5E9" android:strokeWidth="2.4" android:strokeLineCap="round" android:strokeLineJoin="round"
-        android:pathData="M36,84 h36 M39,81.5 l-3,2.5 l3,2.5 M69,81.5 l3,2.5 l-3,2.5" />
+    <path android:strokeColor="#38BDF8" android:strokeWidth="4.2" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M24,36 V24 H36 M84,72 V84 H72" />
+    <path android:fillColor="#FFFFFF" android:pathData="M38,27 H70 a7,7 0 0 1 7,7 V60 a7,7 0 0 1 -7,7 H38 a7,7 0 0 1 -7,-7 V34 a7,7 0 0 1 7,-7z" />
+    <path android:fillColor="#4338CA" android:pathData="M54,35.5 a6.5,6.5 0 1 0 0.01,0z M41,61 a13,12 0 0 1 26,0z" />
+    <path android:fillColor="#38BDF8" android:pathData="M34,70 H74 a6,6 0 0 1 0,12 H34 a6,6 0 0 1 0,-12z" />
+    <path android:strokeColor="#4338CA" android:strokeWidth="2.4" android:strokeLineCap="round" android:pathData="M37,70v6M45,70v4M53,70v6M61,70v4M69,70v6" />
 </vector>

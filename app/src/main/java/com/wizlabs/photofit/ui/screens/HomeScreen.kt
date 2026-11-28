@@ -48,8 +48,8 @@ import com.wizlabs.photofit.data.PresetRepo
 import com.wizlabs.photofit.data.Recents
 import com.wizlabs.photofit.data.SearchEntry
 import com.wizlabs.photofit.data.SearchIndex
-import com.wizlabs.photofit.engine.SnipAction
-import com.wizlabs.photofit.engine.SnipExpression
+import com.wizlabs.photofit.engine.SnipBrain
+import com.wizlabs.photofit.engine.SnipEvent
 import com.wizlabs.photofit.ui.components.GlyphCompress
 import com.wizlabs.photofit.ui.components.GlyphExam
 import com.wizlabs.photofit.ui.components.GlyphJoin
@@ -82,23 +82,31 @@ fun HomeScreen(repo: PresetRepo, open: (Screen) -> Unit) {
             Wordmark(Modifier.weight(1f))
             RoundIconButton(Icons.Outlined.Info, "About", { open(Screen.About) }, tint = Wiz.Muted, size = 48.dp)
         }
-        if (query.isBlank()) {
-            Row(Modifier.fillMaxWidth().padding(top = 6.dp, bottom = 14.dp).enterRise(0), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
+        // Snip lives beside the hero for the whole screen and reacts to the search (one-shot, then settles).
+        val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
+        val mood = when {
+            query.isBlank() -> SnipBrain.react(SnipEvent.Clock(hour))
+            hits.isEmpty() -> SnipBrain.react(SnipEvent.SearchNoResults)
+            else -> SnipBrain.react(SnipEvent.SearchFound(hits.size))
+        }
+        val shotKey = if (query.isBlank() || hits.isEmpty()) 0 else hits.first().id.hashCode().let { if (it == 0) 1 else it }
+        Row(Modifier.fillMaxWidth().padding(top = 6.dp, bottom = 14.dp).enterRise(0), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                if (query.isBlank()) {
                     Text("Your exam photo and signature, accepted the first time.", color = Wiz.Text, style = MaterialTheme.typography.headlineMedium)
                     Spacer(Modifier.height(6.dp))
-                    Text("Exact pixels. Exact KB. Checked before you save.", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
+                    Text(if (mood.line.isNotEmpty()) mood.line else "Exact pixels. Exact KB. Checked before you save.", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium)
+                } else {
+                    Text(mood.line, color = Wiz.Text, style = MaterialTheme.typography.titleLarge)
                 }
-                Snip(SnipExpression.HAPPY, SnipAction.NONE, 96.dp)
             }
-        } else Spacer(Modifier.height(12.dp))
+            Snip(mood.expression, mood.action, 72.dp, oneShot = mood.shot, shotMs = mood.shotMs, shotKey = shotKey, lookAtSearch = true)
+        }
         SearchBox(query, { query = it }, hint = "Search exam or document…", modifier = Modifier.enterRise(1))
         if (query.isNotBlank()) {
             Spacer(Modifier.height(10.dp))
             if (hits.isEmpty()) {
                 Row(Modifier.fillMaxWidth().padding(vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Snip(SnipExpression.SEARCHING, SnipAction.LOOK_SIDE, 72.dp)
-                    Spacer(Modifier.width(12.dp))
                     Column {
                         Text("Can't find it?", color = Wiz.Text, style = MaterialTheme.typography.titleMedium)
                         Text("Try a custom size.", color = Wiz.Muted, style = MaterialTheme.typography.bodyMedium,
@@ -140,7 +148,7 @@ fun HomeScreen(repo: PresetRepo, open: (Screen) -> Unit) {
     }
 }
 
-/** "Wiz" 700 then the product word 500; marigold-ink "Fit". Never used on the launcher icon. */
+/** "Wiz" 700 then the product word 500; indigo "Fit". Never used on the launcher icon. */
 @Composable
 fun Wordmark(modifier: Modifier = Modifier) {
     Text(buildAnnotatedString {

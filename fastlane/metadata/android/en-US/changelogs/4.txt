@@ -1,0 +1,1 @@
+New indigo look (light and dark). Snip is livelier: 10 emotions, reacts to your search, checks and saves, and plays when you tap. New app icon, launcher name is now Photo Fit. Android 15 edge-to-edge screen fit. Ad-ready foundation: placeholder slots only, no ads and no ad SDK in this version. Removed outdated offline and permission wording.

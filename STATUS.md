@@ -1,50 +1,47 @@
-# Wiz Photo Fit - STATUS (branch redesign/wiz-photo-fit-v1.1.0, 1.1.0 (2))
+# Wiz Photo Fit - STATUS (branch feat/photo-fit-ad-slots-1.3.0, 1.3.0 (4))
 
-## Drift from the handoff (found 2026-11-26)
-- HEAD matched d1092d0 on main. `.gitignore` had an uncommitted user change (keystore ignores): left as is, not committed. `Wiz Photo Fit (1.0.0 debug).apk` untracked in root: not committed.
-- Tests: handoff said "1 test file". Real: 1 file, 7 classes, 14 tests (Units, TargetEncoder, Padding, PdfWriter, PresetJson, CropMath...). Baseline 14/14 PASS before changes.
-- The app ships English resources only (`resourceConfigurations = en`). The handoff's "Hindi Home" screenshot and "every shipped locale" strings do not apply. Hindi exists only in the store listing.
-- Fonts came from github.com/google/fonts (Plus Jakarta Sans variable 176 KB + DM Mono Medium 50 KB = 226 KB, OFL, under the 250 KB cap).
-- Play status of 1.0.0 (1) is not recorded in the repo; Haiku must check before uploading.
+Earlier releases: 1.0.0 (1) live; 1.1.0 (2) redesign; 1.2.0 (3) INTERNET for Play in-app updates (published on Closed testing - Alpha per user, 2026-11-28).
 
-## Decisions taken (small, logged not asked)
-- Kept package `ui.components` for tokens (`Wiz` object made theme-aware, light/dark state) instead of a new `ui/theme/` package: one change re-themes all 14 screens. Added `AccentInk` (#8F6A00 / #FFD54D) for text/icons; `Accent` (#FFC400) for fills only.
-- Launcher label and `app_name` now "Wiz Photo Fit" (manifest uses @string/app_name).
-- Snip is code-drawn Compose (no Lottie/Rive). SVG: store-assets/mascot/snip.svg (+ proud variant), PNG 512/1024.
-- Splash: static marigold-disc icon (ic_splash.xml) via the system SplashScreen API. NOT DONE: the 400 ms animated-vector "crop marks snap in" (no AVD authored).
-- Store art tooling replaced: old tools/StoreArt.java (dark Wiz theme) removed; tools/store-art/ (HTML + headless Chrome, render.sh) is the new pipeline.
-- Screenshot 8 is "Light and dark themes" (dark Home) instead of Hindi Home.
-- Sample photos in screenshots are illustrated (tools/store-art/sample-*.html), not real people.
-- Screenshot 4 headline: "Signatures on clean white paper" (not "sharp": output is only 140x60 px).
-- Added Lanczos resampling, 4x signature cleaning and light unsharp (user reported blur). No cloud processing: it would need INTERNET and upload ID photos.
-- Face-size check only appears when FaceFinder ran (Work.face/headRatio).
-- Recent row shows up to 3 of the last 5 presets on Home.
+## What this release does (handoff SONNET_FOLLOWUP_PHOTO_FIT_ADS.md, items 1-12 + 13A)
+- wiz-ads 0.3 SDK-free copy (`com.wizlabs.ads`, `WIZ_ADS_SDK_LINKED=false`), `AdsSetup.kt` with 5 slots, ENABLED=false, `result_exit` hook, debug guard, `AdsSetupTest`. No AdMob/UMP dependency, no AD_ID, no app-ID meta-data.
+- Launcher label "Photo Fit" (`app_name`); "Wiz Photo Fit" = `app_full_name` (About, update prompt).
+- Studio Indigo theme (tokens in `ui/components/Theme.kt`), new tape-card icon, indigo splash, privacy-policy colours, website colours. Yellow grep (FFC400/FFD54D/8F6A00) = 0 in app code.
+- Snip: 11 looks (10 emotions + neutral) with eyebrows, ~200 ms morph, always-alive 15 fps loop, 72 dp on Home, one-shot reactions, 4 tap reactions + haptic tick.
+- Edge-to-edge: `enableEdgeToEdge()` in the only activity, deprecated-API grep = 0, insets per screen, cutout-safe landscape.
+- Claims cleaned (README, fastlane en-US + hi-IN, policy x2, strings). Policy: "No ads are shown in this version. Ads by Google AdMob may come in a later version".
+- Store art: all new (see SONNET_TO_HAIKU.md "New assets"). Screens are real `adb screencap` captures.
 
-## Results
-- Unit tests: 53 PASS / 0 FAIL (baseline 14). New: PresetCountTest(2), SearchIndexTest(7), ComplianceTest(6), SnipBrainTest(9), RecentsTest(3), ResampleTest(6).
-- Release build: `gradle --offline :app:testDebugUnitTest :app:assembleRelease` PASS. app-release-unsigned.apk = 1,894,235 bytes (1.8 MB, limit 2.5 MB).
-- Merged manifest: no INTERNET, no ACCESS_NETWORK_STATE (only the AndroidX DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION signature permission, as in 1.0.0).
-- Emulator wiz35 (API 35, no Play ML modules), one at a time, release APK signed with the local DEBUG key for testing only.
-- Cold start (am start -W, release): fresh install 2.8-4.8 s; after `cmd package compile -m speed-profile` 1.19 / 1.39 / 2.06 s. FAIL against the 1100 ms target (emulator, intro screen on first run). Needs a real-phone check.
-- Idle CPU 10 s after touch on Home: 0.0 %. Memory: PSS 30 MB, RSS 134 MB (limit 180 MB): PASS.
-- Jank (gfxinfo, scroll Home 10 s): 204 frames, legacy janky 0.49 %, new-metric janky 99 % with 50th percentile 17 ms. Inconclusive on the emulator (frames sit at the 16.7 ms deadline). Not claimed as PASS.
-- Functional (emulator): Home, search ("ssc" -> SSC CGL, SSC GD first), exam detail, picker, editor + crop + oval, result + gauge + check card, signature flow + compare slider, ID passport + print sheet, custom builder, dark theme, intro guide: PASS. ModelCard shows worried Snip when Play ML modules are missing: PASS.
-- Crash found and fixed during testing: nested verticalScroll on Home "Recent" row.
-- NOT TESTED: face auto-fit and background swap on a device with Play services ML modules; TalkBack pass; 200 % font scale; reduce-motion (animator scale 0); RTL (ar); 360x640 and tablet profiles; landscape; API 26/29 runtime; 12 MP and 48 MP timing; 5-preset end-to-end file px/KB check via adb pull (only SSC photo 100x120 21 KB and signature 140x60 11 KB verified in-app by the check card); compress batch; joiner; Hindi; share code round-trip (existing code untouched).
-- NOT DONE: tablet 2-column preset grid + editor side panel; AVD splash animation; Hindi translation of new text (listing only); baseline-prof.txt already wildcards the whole package (unchanged).
+## Decisions taken (logged, not asked)
+- Icon: 3 concepts in `store-assets/icon-concepts/`. Picked C "tape card" (white photo card + portrait, sky crop marks, sky tape measure). Reason: reads at 48 px (3 shapes), and the tape-measure strip is unique (rivals use a plain crop frame or camera glyph); B read cleanest but is the generic crop-bracket look.
+- Splash: Android 12+ system splash can show only the icon, so the "Wiz Photo Fit" wordmark is on Home, not on the splash. AVD splash animation not authored.
+- Mascot tech: Compose Canvas, code-drawn (no Lottie/Rive). Idle clock is Snip's own (`rememberAliveClock`, 15 fps, never self-settles); the app-wide 9 s idle settle is NOT used for Snip (contract overrides it). Still frame only for reduce-motion / Battery Saver / unfocused.
+- `SnipExpression.SEARCHING` removed (replaced by CURIOUS/THINKING). ChecksFail is now WORRIED (kind line "...Easy to sort.").
+- Editor crop brackets use fixed light indigo `#8B8CFF` and the head oval sky `#38BDF8` so they read on the dark editor canvas in both themes.
+- Local release signing: `app/build.gradle.kts` reads the common key props by absolute path (`/Users/aashish/Desktop/Personal FIles/Wiz Labs/KEYS/keystore.properties`) when `KEYSTORE_FILE` is unset; CI still uses the `KEYSTORE_*` secrets. Local release APK verified signer CN=Wiz Labs. NOTE: Photo Fit 1.0.0 was originally signed with `photo fit.jks`; if Play rejects a Common-key upload (key mismatch), STOP and report, do not switch keys.
+- Screenshot 8 = dark Home ("Light and dark themes") because the app ships English only (no Hindi UI). No hi-IN image folder exists, so none was made.
+- Result screenshot (1) uses the Signature slot of SSC (passes all 4 checks). The Photo slot needs a white background, and the emulator has no Play-services ML modules (background tool "not ready"), so a Photo result would show a failing background check; that is real app behaviour, not hidden.
+- Photo input = NASA public-domain portrait; signature input generated for this release (store-assets/inputs/SOURCES.md). No private person used.
+- Emulator GNSS icon sits in the status bar of screenshot 2 (demo mode cannot hide it). Left unedited.
+- Removed old 1.1.0 art sources: `tools/store-art/feature.html`, `sample-*.html`, old `raw/*`, old `screenshots/*`, old HTML-based icon. New pipeline: `tools/store-art/make_shots.py` (frame + headline only), `snip_svg.py`.
 
-## Acceptance (handoff section 25)
-- [x] PresetCountTest 36 presets / 13 groups / checksum 1985948845:1513
-- [ ] 5 presets end-to-end px/KB in saved files: PARTIAL (2 verified, see above)
-- [x] N3 search: ssc, neet, passport, pan top 3 (unit tests) + recent row (unit + emulator)
-- [x] N4 pass case (emulator) and failing case (unit test)
-- [~] N5 slider works; Original/Final buttons are the TalkBack alternative. TalkBack NOT TESTED
-- [x] No INTERNET in merged manifest
-- [x] Icon text-free + monochrome, label "Wiz Photo Fit", Snip states per section 14 (brain tests)
-- [~] Section 19 measured partly (see Results); APK 1.8 MB OK
+## Results (real)
+- `gradle --offline --no-daemon :app:testDebugUnitTest :app:assembleRelease`: PASS. Unit tests 76 PASS / 0 FAIL / 0 errors.
+- Release APK (signed, CN=Wiz Labs): 1,921,057 bytes (1.83 MB, limit 3.2 MB). Label "Photo Fit", versionCode 4, versionName 1.3.0, targetSdk 36.
+- Merged permissions: INTERNET, ACCESS_NETWORK_STATE, DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION (AndroidX signature permission). No AD_ID.
+- `grep -rE "com\.google\.android\.(libraries\.ads|ump)" app/src` = 0; releaseRuntimeClasspath has no ads-mobile-sdk / user-messaging-platform / play-services-ads.
+- Edge-to-edge grep (statusBarColor ... FLAG_TRANSLUCENT) = 0 lines in app/src.
+- Emulator wiz35 (API 35, 1080x2400), one at a time, release APK: Home, search, exam detail, picker, editor (photo + signature + ID), result + checks + compare slider, print sheet, builder, dark theme, About, Exam list: PASS. Ad slots take 0 height (About end, Result, Exam list show no gap).
+- Snip budget on Home idle (release): CPU samples 4.0 / 0.0 / 4.0 % (mean 2.7 %, limit 3 %); 150 frames in 10 s = 15 fps; gfxinfo legacy janky 0.00 %, p50/p90/p99 = 17/17/20 ms (emulator frames sit at the vsync deadline, so the new "janky" metric reads 100 %: not claimed as PASS). No allocation in the draw path by construction (reused Paths/FloatArrays), not profiled.
+- QA captures in `store-assets/qa/`: launcher icon on home, About end (gesture, 3-button, landscape+3-button), Exam list, emotion sheet, `home-idle-10s.mp4` (true 10 s screenrecord), `snip-emotions-10s.mp4`.
 
-## Contrast (token pairs, WCAG)
-Light: text #15151A on #FAFAF7 ~17.5; muted #62626E on #FFFFFF ~5.9; AccentInk #8F6A00 on #FFFFFF ~5.3; OnAccent #1A1400 on #FFC400 ~12.9; Good #16A34A on white ~3.3 (used for large text/icons only); Bad #DC2626 ~4.8. Dark: text #F3F3F6 on #0F0F12 ~17; AccentInk #FFD54D on #18181D ~11. (Handoff planner numbers, spot-computed, not exhaustively re-verified.)
+## NOT DONE / NOT TESTED
+- `snip-emotions-10s.mp4` is a 36-frame screencap sequence at 4 fps (9 s), NOT a screenrecord: `screenrecord` captured only 1-3 frames while the search keyboard/taps ran. It shows blink, glance, wink and the curious/thinking change but is coarse.
+- Face auto-fit and background swap on a device with Play-services ML modules; TalkBack; 200 % font scale; reduce-motion; RTL; tablet; API 26/29/36 runtime; keyboard-open forms in 3-button mode; every screen in landscape (only About checked); Hindi.
+- Cold start timing, 12/48 MP timing (unchanged code).
+- Play "deprecated APIs" scan: no AAB scanned. LIBRARY-INTERNAL classes (androidx.activity EdgeToEdge*, material) may still be listed by Play; unverified.
+- Splash wordmark and AVD splash animation (system splash limits). Tablet screenshots (none exist).
+- Gradle `-q` runs: lint not run.
 
-## Ads-ready (user request, 2026-11-26)
-The user wants all apps ad-ready with no ads shown. For Photo Fit that means INTERNET + wiz-ads (OFF) + wiz-update, which contradicts the current "no internet permission" listing, trust pills, privacy policy and Data safety. Not done in 1.1.0. Proposed as 1.2.0 after this release (needs the user's OK on the claim changes).
+## ASO (added after review)
+- Earlier "hi-IN over the limit" claim was WRONG: `wc -m` counted bytes in the C locale. Real character counts: hi-IN title 30 / short 70 / full 1930, en-US 30 / 75 / 3104. All inside Play limits (30 / 80 / 4000). hi-IN left unchanged.
+- en-US full description refreshed: opening line ("photo and signature resizer for online forms"), Snip and indigo themes bullets, compressor heading "(reduce photo size)". No banned words (best, free, #1, top).

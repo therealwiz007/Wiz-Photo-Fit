@@ -1,7 +1,7 @@
 <resources>
-    <color name="wiz_bg">#FAFAF7</color>
-    <color name="wiz_marigold">#FFC400</color>
-    <string name="app_name">Wiz Photo Fit</string>
+    <color name="wiz_bg">#F7F8FC</color>
+    <string name="app_name">Photo Fit</string>
+    <string name="app_full_name">Wiz Photo Fit</string>
 
     <!-- Light studio window background so there is no dark flash before the first frame. -->
     <style name="Theme.WizPhotoFit" parent="@android:style/Theme.Material.Light.NoActionBar">

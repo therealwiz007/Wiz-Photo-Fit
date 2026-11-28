@@ -19,7 +19,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- * "Snap to size" hero (original art, drawn in code): yellow corner brackets snap around a head-and-shoulders
+ * "Snap to size" hero (original art, drawn in code): indigo corner brackets snap around a head-and-shoulders
  * photo while a half-dial KB gauge swings its needle into the green band. Paths are built once per size;
  * the shared clock is read only in the draw phase (24 fps, still frame when idle / Battery Saver).
  */
