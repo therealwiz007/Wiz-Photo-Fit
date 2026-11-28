@@ -16,7 +16,7 @@
 | Permissions diff | vs 1.0.0: +INTERNET, +ACCESS_NETWORK_STATE (since 1.2.0, Play in-app updates). vs 1.2.0 (3): unchanged. No AD_ID. |
 | Data collected/shared | Unchanged vs 1.2.0. Device IDs + Diagnostics via Google Play-services ML Kit (collected, not shared). INTERNET used by Play in-app update. Ad slots exist but no ad SDK, so no ad data. |
 | Privacy policy | https://therealwiz007.github.io/Wiz-Photo-Fit/privacy-policy.html ; both copies (repo root + `app/src/main/assets/`) updated (colours; wording unchanged from WIP). |
-| ASO content | `fastlane/metadata/android/en-US/{title,short_description,full_description}.txt`, `hi-IN/...`; changelog `en-US/changelogs/4.txt` (344 chars). Title: "Wiz Photo Fit: Exam Photo&Sign". |
+| ASO content | `fastlane/metadata/android/{en-US,hi-IN}/{title,short_description,full_description}.txt`. Counts in characters (trailing newline excluded): en-US title 30 / short 75 / full 3104; hi-IN title 30 / short 70 / full 1930; all within Play limits (30 / 80 / 4000). en-US full description refreshed in 1.3.0 (opening line, Snip, themes, compressor heading); hi-IN unchanged. Changelog `en-US/changelogs/4.txt` (344 chars). Title: "Wiz Photo Fit: Exam Photo&Sign". |
 | Known issues / blockers | see NOT DONE below |
 | Release instructions | Track Closed testing - Alpha. **1.2.0 (3) is already published**, so create a NEW release now named `4 (1.3.0)`. Notes: `fastlane/metadata/android/en-US/changelogs/4.txt`. Re-check: Data safety (INTERNET new since 1.0.0; no ad data), Ads = No, target audience 18+, India-only. |
 | Decisions taken | STATUS.md "Decisions taken" |

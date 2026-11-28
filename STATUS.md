@@ -41,3 +41,7 @@ Earlier releases: 1.0.0 (1) live; 1.1.0 (2) redesign; 1.2.0 (3) INTERNET for Pla
 - Play "deprecated APIs" scan: no AAB scanned. LIBRARY-INTERNAL classes (androidx.activity EdgeToEdge*, material) may still be listed by Play; unverified.
 - Splash wordmark and AVD splash animation (system splash limits). Tablet screenshots (none exist).
 - Gradle `-q` runs: lint not run.
+
+## ASO (added after review)
+- Earlier "hi-IN over the limit" claim was WRONG: `wc -m` counted bytes in the C locale. Real character counts: hi-IN title 30 / short 70 / full 1930, en-US 30 / 75 / 3104. All inside Play limits (30 / 80 / 4000). hi-IN left unchanged.
+- en-US full description refreshed: opening line ("photo and signature resizer for online forms"), Snip and indigo themes bullets, compressor heading "(reduce photo size)". No banned words (best, free, #1, top).

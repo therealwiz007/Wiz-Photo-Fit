@@ -1,4 +1,4 @@
-Wiz Photo Fit resizes your photo and signature to the exact size and KB that an online form asks for: SSC, UPSC, RRB railway, IBPS / SBI bank, NEET, JEE, CUET, GATE, state PSC, police and more. Pick your exam, pick a photo, and get a file that fits the limit, like 20–50 KB photo and 10–20 KB signature. Search your exam, crop with guides, and see a pass/fail check for size, KB and format before you save. Resizing runs on your phone. Your photos never leave it.
+Wiz Photo Fit is a photo and signature resizer for online forms. It sets the exact size in pixels and the exact KB that the form asks for: SSC, UPSC, RRB railway, IBPS / SBI bank, NEET, JEE, CUET, GATE, state PSC, police and more. Pick your exam, pick a photo, and get a file that fits the limit, like 20–50 KB photo and 10–20 KB signature. Search your exam, crop with guides, and see a pass/fail check for size, KB and format before you save. Snip, a small helper, reacts as you search and check. Resizing runs on your phone. Your photos never leave it.
 
 ★ EXAM PHOTO & SIGNATURE RESIZER
 • 36 ready sizes for government jobs and entrance exams: SSC CGL / CHSL / MTS / GD, UPSC, RRB NTPC / Group D, IBPS PO / Clerk, SBI PO / Clerk, RBI, JEE Main, JEE Advanced, NEET UG, NEET PG, CUET UG / PG, GATE, CAT, CLAT, NIFT, NATA, ICAR, UGC NET, CSIR NET, CTET, BPSC, MPSC, UP Police, Agniveer, Navodaya JNVST, Sainik School and PAN card
@@ -13,7 +13,8 @@ Wiz Photo Fit resizes your photo and signature to the exact size and KB that an 
 • Search-first home: type SSC, NEET, passport or PAN and jump straight to the right size, with your last 5 forms one tap away
 • Compliance check on every result: dimensions, KB range, format, DPI, background colour and (for ID photos) face size, each marked pass or fix
 • Before and after slider to compare the original with the final file
-• Light and dark themes
+• Snip, the friendly helper on the home screen, reacts to your search, your checks and your taps
+• Light and dark themes in a clean indigo look
 
 ★ MAKE YOUR OWN SIZE
 • Enter width and height in px, cm, mm or inch, the DPI and the min / max KB from any notification
@@ -24,7 +25,7 @@ Wiz Photo Fit resizes your photo and signature to the exact size and KB that an 
 • Face guide, automatic face fit and white or light-blue background (the one-time face and background tools come from Google Play services)
 • Print sheet: many passport photos on 4×6 inch or A4 paper with cut lines, as JPG or true-size PDF
 
-★ IMAGE COMPRESSOR IN KB
+★ IMAGE COMPRESSOR IN KB (REDUCE PHOTO SIZE)
 • Compress many photos at once to 20 KB, 50 KB, 100 KB, 200 KB or 500 KB
 • Reduce the longest side, convert to JPG, WEBP or PNG, save all or share all
 
