@@ -3,7 +3,7 @@
 | Field | Content |
 |---|---|
 | Implementation summary | Ad slots (ads OFF, SDK-free wiz-ads 0.3, `AdsSetup.kt`, debug guard, tests); launcher label "Photo Fit" (full name "Wiz Photo Fit"); claims cleanup; Studio Indigo theme; new tape-card icon + splash; lively Snip (10 emotions, tap reactions, alive on Home); edge-to-edge fixes; all store art redone from real emulator captures; local signing via common key; version 1.3.0 (4). Details: STATUS.md. |
-| Branch + last code commit | `feat/photo-fit-ad-slots-1.3.0` @ `1575fa9` (code + art). One docs commit follows it; release from the **branch tip** (`git log -1`). Not merged into main yet. |
+| Branch + last code commit | `feat/photo-fit-ad-slots-1.3.0` @ `1575fa9` (code + art). One docs commit follows it; release from the **branch tip** (`git log -1`). MERGED into main (34345fb) by Sonnet at the user's request; Haiku does not merge again. |
 | Modified files | see "git diff --stat main...HEAD" below |
 | New assets | below |
 | Final architecture | Compose single-activity app. Ads: `com.wizlabs.ads` (stub, no SDK) + `photofit/AdsSetup.kt`. Theme: `ui/components/Theme.kt` (`Wiz` tokens). Snip: `engine/SnipBrain.kt` (pure), `ui/mascot/SnipPose.kt` (morph table + `SnipDriver`), `SnipArt.kt` (draw), `Snip.kt` (composable). Update popup: `com.wizlabs.update`. |
