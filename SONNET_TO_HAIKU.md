@@ -41,6 +41,9 @@ Mascot: `store-assets/mascot/snip.svg`, `snip-proud.svg`, `snip-512.png`, `snip-
 QA: `store-assets/qa/` (launcher icon, About/Exam list, `home-idle-10s.mp4`, `snip-emotions-10s.mp4`).
 **Deleted:** `store-assets/screenshots/{1-result,2-search,3-crop,4-signature,5-passport,6-print,7-custom,8-dark}.png`, `store-assets/raw/{portrait_white,raw3_editor,raw4_sign_compare}.png`, old `icon-concepts/concept-{a-snipped-tile,b-crop-brackets,c-kb-tag}.svg`, `tools/store-art/{feature,sample-photo,sample-photo-white,sample-sign}.html`. Old 1.1.0 raw1/2/5/6/7/8 files were overwritten by new captures. No fastlane image folders exist (no hi-IN graphics in repo). `HAIKU_PROMPT_PHOTO_FIT_STORE_GRAPHICS.md` is no longer needed.
 
+## Competitor ASO (new step 8c in the Haiku prompt)
+Haiku researches the top Play apps for the main queries, records a competitor table and keyword gaps in `HAIKU_RELEASE_REPORT.md`, and applies only limit-safe, claim-safe edits to the fastlane listing files before upload. Sonnet did NOT do this research.
+
 ## Play Console graphics (do now, with the 1.3.0 (4) release)
 Replace the app icon with `icon-512.png`, replace the feature graphic, DELETE all old phone screenshots, upload `1.png`..`8.png` in order and check the order; same for any translated listing that has its own graphics (hi-IN: only if it has its own). Send for review with the release.
 
